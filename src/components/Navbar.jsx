@@ -1,11 +1,15 @@
+import { useState } from 'react'
+
 const LINKS = [
-  { label: 'Browse', active: true },
-  { label: 'Library', active: false },
-  { label: 'Book Clubs', active: false },
-  { label: 'Community', active: false },
+  { label: 'Browse', href: '#trending' },
+  { label: 'Library', href: '#features' },
+  { label: 'Book Clubs', href: '#testimonials' },
+  { label: 'Community', href: '#community' },
 ]
 
 export default function Navbar() {
+  const [menuOpen, setMenuOpen] = useState(false)
+
   return (
     <nav className="navbar">
       <div className="nav-left">
@@ -27,11 +31,7 @@ export default function Navbar() {
         </a>
         <div className="nav-links">
           {LINKS.map((link) => (
-            <a
-              key={link.label}
-              className={`nav-link${link.active ? ' nav-link--active' : ''}`}
-              href="#"
-            >
+            <a key={link.label} className="nav-link" href={link.href}>
               {link.label}
             </a>
           ))}
@@ -41,10 +41,38 @@ export default function Navbar() {
         <a className="nav-signin" href="#">
           Sign in
         </a>
-        <a className="btn-get-started" href="#">
+        <a className="btn-get-started" href="#community">
           Get Started
         </a>
+        <button
+          aria-expanded={menuOpen}
+          aria-label="Toggle menu"
+          className={`nav-burger${menuOpen ? ' nav-burger--open' : ''}`}
+          onClick={() => setMenuOpen((open) => !open)}
+          type="button"
+        >
+          <span className="material-symbols-outlined">{menuOpen ? 'close' : 'menu'}</span>
+        </button>
       </div>
+
+      {/* Mobile dropdown menu */}
+      {menuOpen && (
+        <div className="nav-menu-mobile">
+          {LINKS.map((link) => (
+            <a
+              key={link.label}
+              className="nav-menu-mobile-link"
+              href={link.href}
+              onClick={() => setMenuOpen(false)}
+            >
+              {link.label}
+            </a>
+          ))}
+          <a className="nav-menu-mobile-link" href="#" onClick={() => setMenuOpen(false)}>
+            Sign in
+          </a>
+        </div>
+      )}
     </nav>
   )
 }

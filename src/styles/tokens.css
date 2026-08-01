@@ -17,22 +17,37 @@
   --brand-cta-start: #12291f;     /* CTA band gradient start            */
   --brand-cta-end: #1e4d3b;       /* CTA band gradient end              */
 
-  /* ---- colors (ink on paper, no pure black) ---- */
+  /* ---- colors (book cover palette — sage/gold/terracotta/olive/umber) ---- */
+  --cover-sage-deep: #2f5d44;     /* back-book gradient start (NO blue) */
+  --cover-sage-dark: #1d3a2a;     /* back-book gradient end             */
+  --cover-sage-border: #3f7d5a;
+  --cover-gold-light: #d4b355;    /* middle book gradient               */
+  --cover-gold-deep: #b38f1b;
+  --cover-gold-border: #e6cc80;
+  --cover-gold-ink: #241a00;      /* text on gold covers                */
+  --cover-terracotta: #b4654a;    /* spines / accent covers             */
+  --cover-terracotta-deep: #8a4a35;
+  --cover-terracotta-border: #c97b5f;
+  --cover-olive: #6b7a3f;
+  --cover-olive-deep: #4a5730;
+  --cover-olive-border: #84944f;
+  --cover-umber: #5c4632;
+  --cover-umber-deep: #3a2c1e;
+  --cover-umber-border: #6e5640;
+  --cover-green-border: #2d6e55;  /* front-book spine border            */
+
+  /* ---- colors (ink on paper, no pure black, no blue) ---- */
   --ink: #1c1917;                 /* headings — warm near-black         */
   --ink-muted: #57534e;           /* body text — softened warm gray     */
-  --on-surface: #1e1b19;
-  --on-surface-variant: #414944;
-  --surface-container-low: #faf2ee;
-  --placeholder: #a8a29e;
-  --outline-variant: #c0c9c2;
+  --placeholder: #a8a29e;         /* input placeholders                 */
 
   /* ---- typography (Newsreader serif + Work Sans sans) ---- */
   --font-serif: 'Newsreader', Georgia, serif;
   --font-sans: 'Work Sans', system-ui, sans-serif;
 
-  --text-display-hero: 64px;
-  --text-display-hero-mobile: 40px;
-  --text-headline-section: 40px;
+  --text-display-hero: clamp(2.5rem, 4.5vw + 1rem, 4rem);
+  --text-display-hero-mobile: clamp(2.25rem, 7vw, 3.25rem);
+  --text-headline-section: clamp(2rem, 3vw + 0.75rem, 2.5rem);
   --text-headline-card: 22px;
   --text-body-lg: 18px;
   --text-body-md: 16px;
@@ -73,4 +88,7 @@
   --navbar-bg: rgba(251, 247, 239, 0.8);          /* brand-bg at 80%  */
   --ring-focus: 0 0 0 3px rgba(30, 77, 59, 0.25); /* brand-primary ring */
   --border-faint: rgba(231, 224, 208, 0.5);       /* brand-outline at 50% */
+  --text-on-gold: rgba(36, 26, 0, 0.7);           /* muted text on gold */
+  --text-on-green-muted: rgba(255, 253, 247, 0.7); /* muted text on dark covers */
+  --text-on-green-faint: rgba(255, 253, 247, 0.6);
 }

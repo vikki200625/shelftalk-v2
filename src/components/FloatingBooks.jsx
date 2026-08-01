@@ -2,7 +2,7 @@ export default function FloatingBooks() {
   return (
     <div className="books-visual">
       <div className="books-stack">
-        {/* Back book */}
+        {/* Back book — deep sage, NO blue */}
         <div className="book-cover book-cover--back">
           <div className="book-text">
             <span className="book-text-label">Non-Fiction</span>
@@ -45,7 +45,7 @@ export default function FloatingBooks() {
           <div className="avatar-stack">
             <span className="avatar avatar--green">A</span>
             <span className="avatar avatar--gold">R</span>
-            <span className="avatar avatar--slate">M</span>
+            <span className="avatar avatar--terracotta">M</span>
           </div>
           <p className="friends-text">4 friends finished this</p>
         </div>

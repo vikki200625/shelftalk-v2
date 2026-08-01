@@ -5,13 +5,23 @@ import { useEffect, useRef, useState } from 'react'
  * scroll into view (or immediately if already visible).
  * Will be reused on every future page section.
  */
-export default function FadeIn({ children, className = '' }) {
+export default function FadeIn({ children, className = '', id = undefined }) {
   const ref = useRef(null)
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
     const node = ref.current
     if (!node) return
+
+    // Respect users who prefer reduced motion: show content immediately.
+    // Guard the call — jsdom and some embedded browsers lack matchMedia.
+    if (
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
+      setVisible(true)
+      return
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -30,7 +40,7 @@ export default function FadeIn({ children, className = '' }) {
   const classes = `fade-in-section${visible ? ' is-visible' : ''}${className ? ` ${className}` : ''}`
 
   return (
-    <section ref={ref} className={classes}>
+    <section ref={ref} id={id} className={classes}>
       {children}
     </section>
   )

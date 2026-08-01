@@ -1,14 +1,15 @@
-import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
 
 describe('landing page', () => {
   it('renders the navbar with brand and CTA', () => {
     render(<App />)
-    expect(screen.getByText('ShellTalk')).toBeInTheDocument()
-    expect(screen.getByText('Get Started')).toBeInTheDocument()
-    expect(screen.getByText('Browse')).toBeInTheDocument()
+    const nav = screen.getByRole('navigation')
+    expect(within(nav).getByText('ShellTalk')).toBeInTheDocument()
+    expect(within(nav).getByText('Get Started')).toBeInTheDocument()
+    expect(within(nav).getByText('Browse')).toBeInTheDocument()
   })
 
   it('renders the hero headline and subtitle', () => {
@@ -25,27 +26,76 @@ describe('landing page', () => {
     expect(screen.getByText('Books')).toBeInTheDocument()
   })
 
-  it('opens the search dropdown with suggestions on focus', async () => {
+  it('opens the search dropdown on focus', async () => {
     const user = userEvent.setup()
-    render(<App />)
+    const { container } = render(<App />)
     const input = screen.getByPlaceholderText(/search by title/i)
-    // "Paulo Coelho" only exists in the dropdown — the floating covers
-    // already show "Frank Herbert", so that name can't prove it opened.
-    expect(screen.queryByText('Paulo Coelho')).not.toBeInTheDocument()
+    const dropdown = () => container.querySelector('.search-dropdown')
+    expect(dropdown()).not.toBeInTheDocument()
 
     await user.click(input)
-    expect(screen.getByText('Paulo Coelho')).toBeInTheDocument()
-    expect(screen.getByText('James Clear')).toBeInTheDocument()
+    expect(dropdown()).toBeInTheDocument()
+    expect(within(dropdown()).getByText(/type to search/i)).toBeInTheDocument()
+  })
+
+  it('shows live search results after typing', async () => {
+    const user = userEvent.setup()
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          docs: [{ key: '/works/OL1W', title: 'The Alchemist', author_name: ['Paulo Coelho'] }],
+        }),
+      }),
+    )
+
+    const { container } = render(<App />)
+    const input = screen.getByPlaceholderText(/search by title/i)
+    await user.type(input, 'alchem')
+
+    await waitFor(() => {
+      const dropdown = container.querySelector('.search-dropdown')
+      expect(dropdown).toBeInTheDocument()
+      expect(within(dropdown).getByText('The Alchemist')).toBeInTheDocument()
+    })
   })
 
   it('closes the search dropdown when clicking outside', async () => {
     const user = userEvent.setup()
-    render(<App />)
+    const { container } = render(<App />)
     const input = screen.getByPlaceholderText(/search by title/i)
     await user.click(input)
-    expect(screen.getByText('Paulo Coelho')).toBeInTheDocument()
+    expect(container.querySelector('.search-dropdown')).toBeInTheDocument()
 
     await user.click(screen.getByText('Trending:'))
-    expect(screen.queryByText('Paulo Coelho')).not.toBeInTheDocument()
+    expect(container.querySelector('.search-dropdown')).not.toBeInTheDocument()
+  })
+
+  it('renders all landing page sections', () => {
+    render(<App />)
+    expect(screen.getByRole('heading', { name: /trending with readers/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /everything your shelf needs/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /readers are talking/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: /your next favorite book is waiting/i }),
+    ).toBeInTheDocument()
+    expect(screen.getByText('© 2026 ShellTalk')).toBeInTheDocument()
+  })
+
+  it('has no blue-ish slate colors anywhere in the styles', () => {
+    const { readFileSync } = require('node:fs')
+    const { join } = require('node:path')
+    const css = [
+      readFileSync(join(__dirname, 'styles/tokens.css'), 'utf8'),
+      readFileSync(join(__dirname, 'styles/globals.css'), 'utf8'),
+    ].join('\n')
+    // The palette is cream/green/gold — no Tailwind slate grays, no navy.
+    expect(css.includes('#334155')).toBe(false)
+    expect(css.includes('#0f172a')).toBe(false)
+    expect(css.includes('#475569')).toBe(false)
+    // Word-boundary match: "slate-" classes or hex names. Plain includes()
+    // would false-positive on "translateY", which contains "slate".
+    expect(/\bslate\b|slate-/.test(css)).toBe(false)
   })
 })
