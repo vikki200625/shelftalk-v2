@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ShellTalk - Find your next favorite book.</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=Work+Sans:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary-fixed-dim": "#a0d1b9",
+                        "on-primary-container": "#8cbda6",
+                        "on-secondary-fixed": "#241a00",
+                        "secondary-fixed-dim": "#ecc246",
+                        "on-error": "#ffffff",
+                        "surface-bright": "#fff8f5",
+                        "primary-fixed": "#bbeed5",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#aff1c7",
+                        "tertiary-container": "#084f30",
+                        "error-container": "#ffdad6",
+                        "on-surface": "#1e1b19",
+                        "on-secondary-container": "#735a00",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-container": "#80c098",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#e9e1dd",
+                        "outline": "#717974",
+                        "error": "#ba1a1a",
+                        "tertiary": "#00361f",
+                        "background": "#fff8f5",
+                        "on-background": "#1e1b19",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e9e1dd",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#584400",
+                        "primary-container": "#1e4d3b",
+                        "inverse-surface": "#33302d",
+                        "secondary": "#755b00",
+                        "primary": "#013626",
+                        "on-surface-variant": "#414944",
+                        "surface": "#fff8f5",
+                        "inverse-primary": "#a0d1b9",
+                        "secondary-fixed": "#ffe08e",
+                        "surface-tint": "#396754",
+                        "on-tertiary-fixed-variant": "#0c5132",
+                        "surface-container": "#f4ece8",
+                        "inverse-on-surface": "#f7efeb",
+                        "on-tertiary-fixed": "#002111",
+                        "surface-container-high": "#eee7e3",
+                        "outline-variant": "#c0c9c2",
+                        "on-primary-fixed-variant": "#204f3d",
+                        "secondary-container": "#fed255",
+                        "surface-container-low": "#faf2ee",
+                        "on-primary-fixed": "#002115",
+                        "tertiary-fixed-dim": "#94d5ac",
+                        "surface-dim": "#e0d8d5",
+                        
+                        // Custom Brand Colors requested by user overriding or extending standard tokens
+                        "brand-bg": "#FBF7EF",
+                        "brand-surface": "#FFFDF7",
+                        "brand-primary": "#1E4D3B",
+                        "brand-primary-hover": "#143A2C",
+                        "brand-accent": "#C9A227",
+                        "brand-sage": "rgba(63, 125, 90, 0.1)",
+                        "brand-sage-text": "#3F7D5A",
+                        "brand-outline": "#E7E0D0",
+                        "brand-cta-start": "#12291F",
+                        "brand-cta-end": "#1E4D3B",
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "huge": "96px",
+                        "xxl": "64px",
+                        "xs": "8px",
+                        "xl": "48px",
+                        "lg": "32px",
+                        "md": "24px",
+                        "sm": "16px"
+                    },
+                    fontFamily: {
+                        "caption": ["Work Sans"],
+                        "display-hero-mobile": ["Newsreader"],
+                        "headline-card": ["Newsreader"],
+                        "headline-section": ["Newsreader"],
+                        "body-lg": ["Work Sans"],
+                        "body-md": ["Work Sans"],
+                        "label-caps": ["Work Sans"],
+                        "headline-section-mobile": ["Newsreader"],
+                        "display-hero": ["Newsreader"]
+                    },
+                    boxShadow: {
+                        'surface': '0 1px 3px rgba(28, 25, 23, 0.08)',
+                        'hover': '0 16px 32px rgba(30, 77, 59, 0.14)',
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #FBF7EF;
+            color: #1e1b19;
+            overflow-x: hidden;
+        }
+
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            visibility: hidden;
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            will-change: opacity, visibility;
+        }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: none;
+            visibility: visible;
+        }
+        
+        .book-spine-effect {
+            box-shadow: inset 4px 0 10px rgba(0,0,0,0.1), inset -1px 0 2px rgba(255,255,255,0.3);
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #FBF7EF; 
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #E7E0D0; 
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #C0C9C2; 
+        }
+
+        .cta-wave {
+            position: absolute;
+            top: -1px;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+            transform: rotate(180deg);
+        }
+        .cta-wave svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 48px;
+        }
+        .cta-wave .shape-fill {
+            fill: #FBF7EF;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md antialiased selection:bg-brand-sage selection:text-brand-primary">
+<!-- TopNavBar (Predicted JSON) -->
+<nav class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-lg py-sm max-w-full bg-brand-bg/80 backdrop-blur-md border-b border-brand-outline transition-all duration-300">
+<div class="flex items-center gap-md">
+<a class="flex items-center gap-xs text-brand-primary group" href="#">
+<svg class="group-hover:scale-110 transition-transform" fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
+</svg>
+<span class="font-headline-card text-headline-card font-bold tracking-tight">ShellTalk</span>
+</a>
+<div class="hidden md:flex items-center gap-sm ml-xl">
+<!-- Highlight 'Browse' as intent for landing page -->
+<a class="font-label-caps text-label-caps text-brand-primary font-bold border-b-2 border-brand-primary px-2 py-1" href="#">Browse</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-brand-primary hover:bg-surface-container-low transition-all duration-300 px-2 py-1 rounded" href="#">Library</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-brand-primary hover:bg-surface-container-low transition-all duration-300 px-2 py-1 rounded" href="#">Book Clubs</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-brand-primary hover:bg-surface-container-low transition-all duration-300 px-2 py-1 rounded" href="#">Community</a>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<a class="hidden md:block font-label-caps text-label-caps text-brand-primary hover:text-brand-primary-hover transition-colors" href="#">Sign in</a>
+<a class="bg-brand-primary text-brand-surface font-label-caps text-label-caps px-6 py-3 rounded-full hover:bg-brand-primary-hover shadow-surface hover:shadow-hover transition-all duration-300 transform hover:-translate-y-0.5" href="#">
+                Get Started
+            </a>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<main class="pt-huge pb-xxl max-w-[1200px] mx-auto px-md md:px-lg overflow-hidden">
+<!-- Hero Section -->
+<section class="min-h-[80vh] flex flex-col lg:flex-row items-center justify-between gap-xl pt-xl fade-in-section">
+<!-- Left: Copy & Search -->
+<div class="w-full lg:w-1/2 flex flex-col justify-center relative z-10">
+<span class="font-label-caps text-label-caps text-brand-accent tracking-widest uppercase mb-4 block">A community for people who love books</span>
+<h1 class="font-display-hero text-display-hero text-on-surface mb-6 leading-tight">Find your next <br/><span class="text-brand-primary italic">favorite book.</span></h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-md">Join thousands of readers tracking their reading, discovering hidden gems, and discussing literature in a cozy digital corner.</p>
+<!-- Search Centerpiece -->
+<div class="relative w-full max-w-lg mb-6 group" id="search-container">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-brand-primary">search</span>
+</div>
+<input class="w-full h-[56px] pl-12 pr-4 bg-brand-surface border border-brand-outline rounded-full text-body-md focus:outline-none focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary shadow-surface transition-all placeholder:text-outline-variant" id="hero-search" placeholder="Search by title, author, or ISBN…" type="text"/>
+<!-- Search Dropdown (Hidden by default) -->
+<div class="absolute top-full mt-2 w-full bg-brand-surface border border-brand-outline rounded-xl shadow-hover hidden overflow-hidden z-20" id="search-dropdown">
+<ul class="py-2">
+<li class="px-4 py-3 hover:bg-brand-bg cursor-pointer transition-colors flex items-center gap-3">
+<div class="w-8 h-10 bg-brand-primary rounded flex-shrink-0 book-spine-effect"></div>
+<div>
+<p class="font-bold text-sm text-on-surface">Dune</p>
+<p class="text-xs text-on-surface-variant">Frank Herbert</p>
+</div>
+</li>
+<li class="px-4 py-3 hover:bg-brand-bg cursor-pointer transition-colors flex items-center gap-3">
+<div class="w-8 h-10 bg-brand-accent rounded flex-shrink-0 book-spine-effect"></div>
+<div>
+<p class="font-bold text-sm text-on-surface">The Alchemist</p>
+<p class="text-xs text-on-surface-variant">Paulo Coelho</p>
+</div>
+</li>
+<li class="px-4 py-3 hover:bg-brand-bg cursor-pointer transition-colors flex items-center gap-3">
+<div class="w-8 h-10 bg-slate-800 rounded flex-shrink-0 book-spine-effect"></div>
+<div>
+<p class="font-bold text-sm text-on-surface">Atomic Habits</p>
+<p class="text-xs text-on-surface-variant">James Clear</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<!-- Trending Tags -->
+<div class="flex items-center gap-2 text-sm text-on-surface-variant font-caption">
+<span class="font-bold">Trending:</span>
+<a class="hover:text-brand-primary transition-colors" href="#">Dune</a> · 
+                    <a class="hover:text-brand-primary transition-colors" href="#">The Alchemist</a> · 
+                    <a class="hover:text-brand-primary transition-colors" href="#">Atomic Habits</a>
+</div>
+<!-- Stats Row -->
+<div class="flex items-center gap-6 mt-12 pt-8 border-t border-brand-outline/50 w-max">
+<div>
+<p class="font-headline-card text-headline-card text-brand-primary font-bold">12k+</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Readers</p>
+</div>
+<div class="h-10 w-px bg-brand-outline"></div>
+<div>
+<p class="font-headline-card text-headline-card text-brand-primary font-bold">58k+</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Books</p>
+</div>
+<div class="h-10 w-px bg-brand-outline"></div>
+<div>
+<p class="font-headline-card text-headline-card text-brand-primary font-bold">1.4k+</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Clubs</p>
+</div>
+</div>
+</div>
+<!-- Right: Floating Books Graphic -->
+<div class="w-full lg:w-1/2 relative h-[500px] flex items-center justify-center lg:justify-end perspective-1000">
+<div class="relative w-[300px] h-[400px]">
+<!-- Book 3 (Back) -->
+<div class="absolute top-0 right-0 w-[200px] h-[300px] bg-gradient-to-br from-slate-700 to-slate-900 rounded-r-xl rounded-l-sm shadow-xl transform rotate-6 translate-x-12 translate-y-12 book-spine-effect flex items-center justify-center border-l-4 border-slate-600">
+<div class="text-brand-surface font-headline-card text-center p-4">
+<span class="block text-sm uppercase tracking-widest opacity-60 mb-2 font-caption">Non-Fiction</span>
+                            Atomic<br/>Habits
+                        </div>
+</div>
+<!-- Book 2 (Middle) -->
+<div class="absolute top-4 right-12 w-[210px] h-[315px] bg-gradient-to-br from-[#d4b355] to-[#b38f1b] rounded-r-xl rounded-l-sm shadow-2xl transform rotate-3 translate-x-6 translate-y-6 book-spine-effect flex items-center justify-center border-l-4 border-[#e6cc80]">
+<div class="text-[#241a00] font-headline-card text-center p-4">
+<span class="block text-sm uppercase tracking-widest opacity-60 mb-2 font-caption">Fiction</span>
+                            The<br/>Alchemist
+                        </div>
+</div>
+<!-- Book 1 (Front) -->
+<div class="absolute top-8 right-24 w-[220px] h-[330px] bg-gradient-to-br from-[#1E4D3B] to-[#12291F] rounded-r-xl rounded-l-sm shadow-2xl transform hover:-translate-y-2 transition-transform duration-500 book-spine-effect flex flex-col items-center justify-center border-l-4 border-[#2d6e55] z-10">
+<div class="text-brand-surface font-headline-card text-center p-4 mb-4">
+<span class="block text-xs uppercase tracking-widest text-brand-accent mb-2 font-caption">Sci-Fi Epic</span>
+<span class="text-3xl font-bold">DUNE</span>
+</div>
+<div class="w-12 h-1 bg-brand-accent/50 rounded-full mb-4"></div>
+<span class="text-xs text-brand-surface/70 font-caption uppercase tracking-wider">Frank Herbert</span>
+</div>
+<!-- Overlay UI Elements -->
+<div class="absolute bottom-16 right-[-20px] bg-brand-surface p-4 rounded-xl shadow-hover z-20 w-64 animate-[bounce_4s_infinite_ease-in-out]">
+<p class="text-xs font-bold text-on-surface mb-2 font-caption">Currently reading — 47% done</p>
+<div class="w-full h-2 bg-brand-bg rounded-full overflow-hidden mb-2">
+<div class="h-full bg-brand-primary w-[47%] rounded-full"></div>
+</div>
+</div>
+<div class="absolute top-12 left-[-40px] bg-brand-surface py-2 px-4 rounded-full shadow-hover z-20 flex items-center gap-3 animate-[bounce_5s_infinite_ease-in-out_reverse]">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full bg-[#1E4D3B] border-2 border-brand-surface flex items-center justify-center text-[10px] text-white font-bold">A</div>
+<div class="w-6 h-6 rounded-full bg-[#C9A227] border-2 border-brand-surface flex items-center justify-center text-[10px] text-white font-bold">R</div>
+<div class="w-6 h-6 rounded-full bg-slate-700 border-2 border-brand-surface flex items-center justify-center text-[10px] text-white font-bold">M</div>
+</div>
+<p class="text-xs font-bold text-on-surface font-caption">4 friends finished this</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<script>
+        // Simple Intersection Observer for scroll animations
+        document.addEventListener("DOMContentLoaded", () => {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        // Add stagger effect based on index if multiple elements appear at once
+                        setTimeout(() => {
+                            entry.target.classList.add('is-visible');
+                        }, index * 100);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.fade-in-section').forEach(section => {
+                observer.observe(section);
+            });
+
+            // Search dropdown logic
+            const searchInput = document.getElementById('hero-search');
+            const searchDropdown = document.getElementById('search-dropdown');
+            const searchContainer = document.getElementById('search-container');
+
+            searchInput.addEventListener('focus', () => {
+                searchDropdown.classList.remove('hidden');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!searchContainer.contains(e.target)) {
+                    searchDropdown.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body></html>

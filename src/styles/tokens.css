@@ -1,0 +1,76 @@
+/* ------------------------------------------------------------------
+   tokens.css — THE single source of truth for the design system.
+   Everything here comes from DESIGN.md + code.html (Library Warmth).
+   Never hardcode a color, font, spacing, or radius anywhere else.
+   ------------------------------------------------------------------ */
+
+:root {
+  /* ---- colors (brand) ---- */
+  --brand-bg: #fbf7ef;            /* page background — warm cream paper */
+  --brand-surface: #fffdf7;       /* cards / containers — bright cream  */
+  --brand-primary: #1e4d3b;       /* forest green — actions, branding   */
+  --brand-primary-hover: #143a2c; /* darker green on hover              */
+  --brand-accent: #c9a227;        /* brass — highlights, premium marks  */
+  --brand-outline: #e7e0d0;       /* sand — thin borders                */
+  --brand-sage: rgba(63, 125, 90, 0.1);   /* success chip background    */
+  --brand-sage-text: #3f7d5a;             /* success chip text          */
+  --brand-cta-start: #12291f;     /* CTA band gradient start            */
+  --brand-cta-end: #1e4d3b;       /* CTA band gradient end              */
+
+  /* ---- colors (ink on paper, no pure black) ---- */
+  --ink: #1c1917;                 /* headings — warm near-black         */
+  --ink-muted: #57534e;           /* body text — softened warm gray     */
+  --on-surface: #1e1b19;
+  --on-surface-variant: #414944;
+  --surface-container-low: #faf2ee;
+  --placeholder: #a8a29e;
+  --outline-variant: #c0c9c2;
+
+  /* ---- typography (Newsreader serif + Work Sans sans) ---- */
+  --font-serif: 'Newsreader', Georgia, serif;
+  --font-sans: 'Work Sans', system-ui, sans-serif;
+
+  --text-display-hero: 64px;
+  --text-display-hero-mobile: 40px;
+  --text-headline-section: 40px;
+  --text-headline-card: 22px;
+  --text-body-lg: 18px;
+  --text-body-md: 16px;
+  --text-caption: 14px;
+  --text-label: 12px;
+
+  --leading-tight: 1.1;
+  --leading-snug: 1.2;
+  --leading-normal: 1.6;
+  --tracking-tight: -0.02em;
+  --tracking-wide: 0.05em;
+  --tracking-widest: 0.1em;
+
+  /* ---- spacing (8px base grid) ---- */
+  --space-xs: 8px;
+  --space-sm: 16px;
+  --space-md: 24px;
+  --space-lg: 32px;
+  --space-xl: 48px;
+  --space-xxl: 64px;
+  --space-huge: 96px;
+
+  /* ---- radii (soft-organic shapes) ---- */
+  --radius-sm: 4px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* ---- elevation (warm-tinted shadows) ---- */
+  --shadow-surface: 0 1px 3px rgba(28, 25, 23, 0.08);
+  --shadow-hover: 0 16px 32px rgba(30, 77, 59, 0.14);
+  --shadow-book-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --shadow-book-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+  /* ---- alpha variants of tokens (keep derived colors in one place) ---- */
+  --navbar-bg: rgba(251, 247, 239, 0.8);          /* brand-bg at 80%  */
+  --ring-focus: 0 0 0 3px rgba(30, 77, 59, 0.25); /* brand-primary ring */
+  --border-faint: rgba(231, 224, 208, 0.5);       /* brand-outline at 50% */
+}
