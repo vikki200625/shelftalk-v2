@@ -28,6 +28,9 @@ global.window.matchMedia = global.window.matchMedia || (() => ({
   removeListener() {},
 }))
 
+// jsdom doesn't implement window.scrollTo (ScrollToTop calls it on navigation).
+global.window.scrollTo = global.window.scrollTo || (() => {})
+
 // Components fetch on mount (search, trending, genre rows). Give every test
 // a fetch stub that resolves to an empty response so nothing hits the real
 // network. Tests that care about responses override the stub per-test with

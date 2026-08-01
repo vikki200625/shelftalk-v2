@@ -1,11 +1,22 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, within, waitFor } from '@testing-library/react'
+import { MemoryRouter } from 'react-router'
 import userEvent from '@testing-library/user-event'
 import App from './App'
 
+// App uses react-router (BrowserRouter in main.jsx) — tests render it
+// inside a MemoryRouter so navigation works without a real URL bar.
+function renderApp(initialEntries = ['/']) {
+  return render(
+    <MemoryRouter initialEntries={initialEntries}>
+      <App />
+    </MemoryRouter>,
+  )
+}
+
 describe('landing page', () => {
   it('renders the navbar with brand and CTA', () => {
-    render(<App />)
+    renderApp()
     const nav = screen.getByRole('navigation')
     expect(within(nav).getByText('ShellTalk')).toBeInTheDocument()
     expect(within(nav).getByText('Get Started')).toBeInTheDocument()
@@ -13,13 +24,13 @@ describe('landing page', () => {
   })
 
   it('renders the hero headline and subtitle', () => {
-    render(<App />)
+    renderApp()
     expect(screen.getByRole('heading', { name: /find your next favorite book/i })).toBeInTheDocument()
     expect(screen.getByText(/join thousands of readers/i)).toBeInTheDocument()
   })
 
   it('shows trending titles and stats', () => {
-    render(<App />)
+    renderApp()
     expect(screen.getByText('Trending:')).toBeInTheDocument()
     expect(screen.getByText('12k+')).toBeInTheDocument()
     expect(screen.getByText('1.4k+')).toBeInTheDocument()
@@ -28,7 +39,7 @@ describe('landing page', () => {
 
   it('opens the search dropdown on focus', async () => {
     const user = userEvent.setup()
-    const { container } = render(<App />)
+    const { container } = renderApp()
     const input = screen.getByPlaceholderText(/search by title/i)
     const dropdown = () => container.querySelector('.search-dropdown')
     expect(dropdown()).not.toBeInTheDocument()
@@ -50,7 +61,7 @@ describe('landing page', () => {
       }),
     )
 
-    const { container } = render(<App />)
+    const { container } = renderApp()
     const input = screen.getByPlaceholderText(/search by title/i)
     await user.type(input, 'alchem')
 
@@ -73,7 +84,7 @@ describe('landing page', () => {
       }),
     )
 
-    const { container } = render(<App />)
+    const { container } = renderApp()
     const duneLink = screen.getByRole('button', { name: 'Dune' })
     await user.click(duneLink)
 
@@ -88,7 +99,7 @@ describe('landing page', () => {
 
   it('closes the search dropdown when clicking outside', async () => {
     const user = userEvent.setup()
-    const { container } = render(<App />)
+    const { container } = renderApp()
     const input = screen.getByPlaceholderText(/search by title/i)
     await user.click(input)
     expect(container.querySelector('.search-dropdown')).toBeInTheDocument()
@@ -98,7 +109,7 @@ describe('landing page', () => {
   })
 
   it('renders all landing page sections', () => {
-    render(<App />)
+    renderApp()
     expect(screen.getByRole('heading', { name: /trending with readers/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /browse by genre/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /everything your shelf needs/i })).toBeInTheDocument()

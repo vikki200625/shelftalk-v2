@@ -31,7 +31,7 @@ Shared status file between the two agents working on this project:
 
 ## In progress
 
-- *(nothing right now)*
+- **OpenClaude (2026-08-01)**: Book detail page slice — react-router setup + `/book/:key` detail page + click wiring (search rows, trending/genre cards). Files: `src/main.jsx`, `src/App.jsx`, `src/components/Landing.jsx` (new), `src/components/ScrollToTop.jsx` (new), `src/components/BookDetail.jsx` (new), `src/components/BookCard.jsx`, `src/components/SearchBar.jsx`, `src/components/Navbar.jsx`, `src/lib/openlibrary.js`, `src/styles/globals.css`, tests.
 
 ## Up next (user-approved split, 2026-08-01)
 

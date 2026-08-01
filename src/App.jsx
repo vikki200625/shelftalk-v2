@@ -1,23 +1,18 @@
+import { Route, Routes } from 'react-router'
 import Navbar from './components/Navbar'
-import Hero from './components/Hero'
-import Trending from './components/Trending'
-import GenreSection from './components/GenreSection'
-import Features from './components/Features'
-import Testimonials from './components/Testimonials'
-import CtaBand from './components/CtaBand'
 import Footer from './components/Footer'
+import Landing from './components/Landing'
+import ScrollToTop from './components/ScrollToTop'
 
 export default function App() {
   return (
     <>
+      <ScrollToTop />
       <Navbar />
       <main className="page-main">
-        <Hero />
-        <Trending />
-        <GenreSection />
-        <Features />
-        <Testimonials />
-        <CtaBand />
+        <Routes>
+          <Route path="/" element={<Landing />} />
+        </Routes>
       </main>
       <Footer />
     </>
