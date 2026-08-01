@@ -77,6 +77,8 @@ describe('Avatar', () => {
 // ---- FollowButton ----
 
 describe('FollowButton', () => {
+  beforeEach(() => stubAuth())
+
   it('shows Follow when not following', () => {
     render(
       <AuthProvider>
