@@ -300,8 +300,8 @@ button {
   font-weight: 700;
   letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
-  color: #8a6d1f;
-  background: #f5ebd3;
+  color: var(--brand-accent-deep);
+  background: var(--brand-cream-soft);
   padding: 6px 16px;
   border-radius: var(--radius-full);
   margin-bottom: var(--space-sm);
@@ -948,7 +948,7 @@ button {
 }
 
 .btn-cta-primary:hover {
-  background: #f5ebd3;
+  background: var(--brand-cream-soft);
   box-shadow: var(--shadow-hover);
   transform: translateY(-2px);
 }
