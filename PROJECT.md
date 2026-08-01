@@ -38,3 +38,13 @@ The previous (messy but valuable) version is at /home/vikki/shelftalk. It contai
 - Slow and steady beats fast and broken.
 - When in doubt, ask the user rather than inventing features.
 - Keep responses and code simple — this is a learning project, not a production system.
+
+## Two agents, one project (Hermes + OpenClaude)
+
+This project is worked on by two AI agents: **Hermes** (CLI agent) and **OpenClaude** (opencode agent). They share the repo but not the conversation, so coordination lives in files:
+
+- `WORKLOG.md` — shared status. Read it before starting any task, add an entry when you start, move it to Done when you finish. Never edit the other agent's entries.
+- `AGENTS.md` — the coordination rules both agents auto-read (this is a pointer, the brief stays in this file).
+- Git history — `git log` shows what the other agent did; commit after every slice.
+
+If the other agent's in-progress work overlaps yours, stop and ask the user before proceeding.
