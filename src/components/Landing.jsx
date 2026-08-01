@@ -1,8 +1,6 @@
 import Hero from './Hero'
 import Trending from './Trending'
 import GenreSection from './GenreSection'
-import Features from './Features'
-import Testimonials from './Testimonials'
 import CtaBand from './CtaBand'
 
 /**
@@ -15,8 +13,6 @@ export default function Landing() {
       <Hero />
       <Trending />
       <GenreSection />
-      <Features />
-      <Testimonials />
       <CtaBand />
     </>
   )

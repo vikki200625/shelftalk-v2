@@ -3,11 +3,9 @@ import { Link, useNavigate } from 'react-router'
 import { useAuth } from '../context/AuthContext'
 import { validatePassword } from '../lib/validate'
 
-export default function SignUp() {
-  const { signUp } = useAuth()
+export default function ResetPassword() {
+  const { resetPassword } = useAuth()
   const navigate = useNavigate()
-  const [username, setUsername] = useState('')
-  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
@@ -17,16 +15,6 @@ export default function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-
-    if (username.length < 3) {
-      setError('Username must be at least 3 characters')
-      return
-    }
-
-    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-      setError('Username can only contain letters, numbers, and underscores')
-      return
-    }
 
     const passwordError = validatePassword(password)
     if (passwordError) {
@@ -41,16 +29,10 @@ export default function SignUp() {
 
     setLoading(true)
 
-    const { error: authError } = await signUp(username, email, password)
+    const { error: authError } = await resetPassword(password)
 
     if (authError) {
-      if (authError.message.includes('already registered')) {
-        setError('An account with this email already exists')
-      } else if (authError.message.includes('username')) {
-        setError('That username is already taken')
-      } else {
-        setError(authError.message)
-      }
+      setError(authError.message)
       setLoading(false)
       return
     }
@@ -63,13 +45,12 @@ export default function SignUp() {
     return (
       <div className="auth-page">
         <div className="auth-card">
-          <h1 className="auth-title">Check your email</h1>
+          <h1 className="auth-title">Password updated</h1>
           <p className="auth-subtitle">
-            We sent a confirmation link to <strong>{email}</strong>.
-            Click it to activate your account, then sign in.
+            Your password has been reset successfully. You can now sign in with your new password.
           </p>
-          <Link className="auth-btn auth-btn--secondary" to="/signin">
-            Go to sign in
+          <Link className="auth-btn" to="/signin">
+            Sign in
           </Link>
         </div>
       </div>
@@ -79,39 +60,14 @@ export default function SignUp() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1 className="auth-title">Create your account</h1>
-        <p className="auth-subtitle">Join the ShellTalk reading community</p>
+        <h1 className="auth-title">Set new password</h1>
+        <p className="auth-subtitle">Choose a strong new password for your account.</p>
 
         {error && <div className="auth-error">{error}</div>}
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <label className="auth-label">
-            Username
-            <input
-              className="auth-input"
-              minLength={3}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Pick a unique username"
-              required
-              type="text"
-              value={username}
-            />
-          </label>
-
-          <label className="auth-label">
-            Email
-            <input
-              className="auth-input"
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              required
-              type="email"
-              value={email}
-            />
-          </label>
-
-          <label className="auth-label">
-            Password
+            New password
             <input
               className="auth-input"
               minLength={8}
@@ -124,12 +80,12 @@ export default function SignUp() {
           </label>
 
           <label className="auth-label">
-            Confirm password
+            Confirm new password
             <input
               className="auth-input"
               minLength={8}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Repeat your password"
+              placeholder="Repeat your new password"
               required
               type="password"
               value={confirmPassword}
@@ -141,14 +97,13 @@ export default function SignUp() {
             disabled={loading}
             type="submit"
           >
-            {loading ? 'Creating account…' : 'Sign up'}
+            {loading ? 'Updating…' : 'Update password'}
           </button>
         </form>
 
         <p className="auth-switch">
-          Already have an account?{' '}
           <Link className="auth-link" to="/signin">
-            Sign in
+            Back to sign in
           </Link>
         </p>
       </div>

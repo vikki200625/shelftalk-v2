@@ -134,8 +134,6 @@ describe('landing page', () => {
     renderApp()
     expect(screen.getByRole('heading', { name: /trending with readers/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /browse by genre/i })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: /everything your shelf needs/i })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: /readers are talking/i })).toBeInTheDocument()
     expect(
       screen.getByRole('heading', { name: /your next favorite book is waiting/i }),
     ).toBeInTheDocument()

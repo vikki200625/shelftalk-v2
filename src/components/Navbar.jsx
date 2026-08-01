@@ -6,7 +6,6 @@ const LINKS = [
   { label: 'Browse', href: '#trending' },
   { label: 'Library', href: '#features' },
   { label: 'Book Clubs', href: '#testimonials' },
-  { label: 'Community', href: '#community' },
 ]
 
 export default function Navbar() {

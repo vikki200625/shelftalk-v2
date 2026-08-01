@@ -1,13 +1,12 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { Link } from 'react-router'
 import { useAuth } from '../context/AuthContext'
 
-export default function SignIn() {
-  const { signIn } = useAuth()
-  const navigate = useNavigate()
+export default function ForgotPassword() {
+  const { forgotPassword } = useAuth()
   const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e) => {
@@ -15,7 +14,7 @@ export default function SignIn() {
     setError('')
     setLoading(true)
 
-    const { error: authError } = await signIn(username, password)
+    const { error: authError } = await forgotPassword(username)
 
     if (authError) {
       setError(authError.message)
@@ -23,14 +22,34 @@ export default function SignIn() {
       return
     }
 
-    navigate('/')
+    setSuccess(true)
+    setLoading(false)
+  }
+
+  if (success) {
+    return (
+      <div className="auth-page">
+        <div className="auth-card">
+          <h1 className="auth-title">Check your email</h1>
+          <p className="auth-subtitle">
+            We sent a password reset link to the email registered to{' '}
+            <strong>{username}</strong>. Click the link to set a new password.
+          </p>
+          <Link className="auth-btn auth-btn--secondary" to="/signin">
+            Back to sign in
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1 className="auth-title">Welcome back</h1>
-        <p className="auth-subtitle">Sign in to your ShellTalk account</p>
+        <h1 className="auth-title">Forgot your password?</h1>
+        <p className="auth-subtitle">
+          Enter your username and we&apos;ll send a reset link to your registered email.
+        </p>
 
         {error && <div className="auth-error">{error}</div>}
 
@@ -47,37 +66,19 @@ export default function SignIn() {
             />
           </label>
 
-          <label className="auth-label">
-            Password
-            <input
-              className="auth-input"
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Your password"
-              required
-              type="password"
-              value={password}
-            />
-          </label>
-
-          <div className="auth-row">
-            <Link className="auth-link auth-link--small" to="/forgot-password">
-              Forgot password?
-            </Link>
-          </div>
-
           <button
             className="auth-btn"
             disabled={loading}
             type="submit"
           >
-            {loading ? 'Signing in…' : 'Sign in'}
+            {loading ? 'Sending…' : 'Send reset link'}
           </button>
         </form>
 
         <p className="auth-switch">
-          Don&apos;t have an account?{' '}
-          <Link className="auth-link" to="/signup">
-            Sign up
+          Remember your password?{' '}
+          <Link className="auth-link" to="/signin">
+            Sign in
           </Link>
         </p>
       </div>

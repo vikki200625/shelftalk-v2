@@ -1729,6 +1729,17 @@ button {
   color: var(--brand-primary-hover);
 }
 
+.auth-link--small {
+  font-size: var(--text-caption);
+  font-weight: 600;
+}
+
+.auth-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: calc(-1 * var(--space-xs));
+}
+
 .auth-loading {
   text-align: center;
   font-size: var(--text-body-lg);

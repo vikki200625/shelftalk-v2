@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import FadeIn from './FadeIn'
 
 export default function CtaBand() {
@@ -9,9 +10,9 @@ export default function CtaBand() {
         <h2 className="cta-title">Your next favorite book is waiting.</h2>
         <p className="cta-sub">Join the community — it's free, and it takes thirty seconds.</p>
         <div className="cta-actions">
-          <a className="btn-cta-primary" href="#trending">
+          <Link className="btn-cta-primary" to="/signup">
             Join the Community
-          </a>
+          </Link>
           <a className="btn-cta-secondary" href="#trending">
             Browse Books
           </a>

@@ -8,13 +8,11 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Check active session on mount
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
       setLoading(false)
     })
 
-    // Listen for auth changes (login, logout, token refresh)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setUser(session?.user ?? null)
@@ -25,15 +23,69 @@ export function AuthProvider({ children }) {
     return () => subscription.unsubscribe()
   }, [])
 
-  const signUp = (email, password) =>
-    supabase.auth.signUp({ email, password })
+  // ---- Sign up with username ----
+  const signUp = (username, email, password) =>
+    supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { username } },
+    })
 
-  const signIn = (email, password) =>
-    supabase.auth.signInWithPassword({ email, password })
+  // ---- Sign in with username (lookup email from profiles, then sign in) ----
+  const signIn = async (username, password) => {
+    const { data: profile, error: lookupError } = await supabase
+      .from('profiles')
+      .select('email')
+      .eq('username', username)
+      .single()
 
+    if (lookupError || !profile) {
+      return { error: { message: 'No account found with that username' } }
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email: profile.email,
+      password,
+    })
+
+    if (error) {
+      if (error.message.includes('Invalid login')) {
+        return { error: { message: 'Wrong password' } }
+      }
+      return { error }
+    }
+
+    return { data: true }
+  }
+
+  // ---- Forgot password (by username) ----
+  const forgotPassword = async (username) => {
+    const { data: profile, error: lookupError } = await supabase
+      .from('profiles')
+      .select('email')
+      .eq('username', username)
+      .single()
+
+    if (lookupError || !profile) {
+      return { error: { message: 'No account found with that username' } }
+    }
+
+    const { error } = await supabase.auth.resetPasswordForEmail(profile.email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    })
+
+    if (error) return { error }
+    return { data: true }
+  }
+
+  // ---- Reset password (after clicking email link) ----
+  const resetPassword = (newPassword) =>
+    supabase.auth.updateUser({ password: newPassword })
+
+  // ---- Sign out ----
   const signOut = () => supabase.auth.signOut()
 
-  const value = { user, loading, signUp, signIn, signOut }
+  const value = { user, loading, signUp, signIn, signOut, forgotPassword, resetPassword }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
