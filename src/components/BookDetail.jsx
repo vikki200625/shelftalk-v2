@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router'
 import { fetchWork } from '../lib/openlibrary'
 import BookCover from './BookCover'
+import CommentSection from './CommentSection'
 
 /**
  * BookDetail — the /book/:key page. The header renders instantly from
@@ -84,6 +85,8 @@ export default function BookDetail() {
       {status === 'ready' && detail?.description && (
         <p className="detail-description">{detail.description}</p>
       )}
+
+      <CommentSection bookKey={key} />
     </article>
   )
 }

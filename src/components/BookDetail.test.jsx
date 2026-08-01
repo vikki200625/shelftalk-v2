@@ -2,7 +2,36 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router'
+import { AuthProvider } from '../context/AuthContext'
 import BookDetail from './BookDetail'
+
+// BookDetail renders CommentSection, which uses useAuth and calls
+// supabase.from(...). Mock the supabase module so the auth provider is
+// inert and comment queries never hit the network.
+const supabaseMock = vi.hoisted(() => ({
+  auth: { getSession: vi.fn(), onAuthStateChange: vi.fn() },
+  from: vi.fn(),
+}))
+
+vi.mock('../lib/supabase', () => ({ default: supabaseMock }))
+
+supabaseMock.auth.getSession.mockResolvedValue({ data: { session: null } })
+supabaseMock.auth.onAuthStateChange.mockImplementation(() => ({
+  data: { subscription: { unsubscribe: vi.fn() } },
+}))
+supabaseMock.from.mockImplementation(() => {
+  // Mirrors the real supabase chain: from().select().eq().order() returns
+  // a thenable builder (the promise resolves when awaited).
+  const chain = {
+    select: vi.fn(() => chain),
+    eq: vi.fn(() => chain),
+    order: vi.fn(() => chain),
+    insert: vi.fn().mockResolvedValue({ data: null, error: null }),
+    then: (onFulfilled, onRejected) =>
+      Promise.resolve({ data: [], error: null }).then(onFulfilled, onRejected),
+  }
+  return chain
+})
 
 const WORK = {
   key: '/works/OL45804W',
@@ -17,9 +46,11 @@ function renderDetail({ book, key = 'OL45804W' } = {}) {
     <MemoryRouter
       initialEntries={[{ pathname: `/book/${key}`, state: book ? { book } : undefined }]}
     >
-      <Routes>
-        <Route path="/book/:key" element={<BookDetail />} />
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route path="/book/:key" element={<BookDetail />} />
+        </Routes>
+      </AuthProvider>
     </MemoryRouter>,
   )
 }
@@ -101,5 +132,13 @@ describe('BookDetail', () => {
     expect(await screen.findByRole('heading', { name: 'Dune' })).toBeInTheDocument()
     // No state → no author line, no rating/year.
     expect(screen.queryByText('Frank Herbert')).not.toBeInTheDocument()
+  })
+
+  it('renders the comment section at the end of the page', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => WORK }))
+
+    renderDetail({ book: { key: '/works/OL45804W', title: 'Dune', authorName: 'Frank Herbert' } })
+    expect(await screen.findByRole('heading', { name: /comments/i })).toBeInTheDocument()
+    expect(screen.getByText(/no comments yet/i)).toBeInTheDocument()
   })
 })
