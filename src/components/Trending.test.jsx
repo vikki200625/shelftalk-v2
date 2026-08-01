@@ -1,7 +1,11 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
+import { MemoryRouter } from 'react-router'
 import userEvent from '@testing-library/user-event'
 import Trending from './Trending'
+
+// BookCard wraps cards in react-router Links — needs Router context.
+const renderWithRouter = (ui) => render(<MemoryRouter>{ui}</MemoryRouter>)
 
 const WORKS = [
   { key: '/works/OL1W', title: 'Dune', author_name: ['Frank Herbert'], cover_i: 5, first_publish_year: 1965 },
@@ -12,7 +16,7 @@ describe('Trending', () => {
   it('renders real trending books as cards', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ works: WORKS }) }))
 
-    render(<Trending />)
+    renderWithRouter(<Trending />)
     expect(await screen.findByText('Dune')).toBeInTheDocument()
     expect(screen.getByText('Frank Herbert')).toBeInTheDocument()
     expect(screen.getByText('1984')).toBeInTheDocument()
@@ -23,7 +27,7 @@ describe('Trending', () => {
   it('shows an empty state when the feed has no books', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ works: [] }) }))
 
-    render(<Trending />)
+    renderWithRouter(<Trending />)
     expect(await screen.findByText(/no trending books/i)).toBeInTheDocument()
   })
 
@@ -35,7 +39,7 @@ describe('Trending', () => {
       .mockResolvedValueOnce({ ok: true, json: async () => ({ works: WORKS }) })
     vi.stubGlobal('fetch', fetchMock)
 
-    render(<Trending />)
+    renderWithRouter(<Trending />)
     await waitFor(() => expect(screen.getByText(/couldn.t load trending/i)).toBeInTheDocument())
 
     await user.click(screen.getByRole('button', { name: /try again/i }))

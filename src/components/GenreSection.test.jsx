@@ -1,8 +1,12 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
+import { MemoryRouter } from 'react-router'
 import userEvent from '@testing-library/user-event'
 import GenreSection from './GenreSection'
 import { GENRES } from '../lib/genres'
+
+// BookCard wraps cards in react-router Links — needs Router context.
+const renderWithRouter = (ui) => render(<MemoryRouter>{ui}</MemoryRouter>)
 
 function worksFor(slug, title) {
   return [{ key: `/works/${slug}`, title, author_name: ['Some Author'] }]
@@ -12,7 +16,7 @@ describe('GenreSection', () => {
   it('renders a heading for every genre', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ works: [] }) }))
 
-    render(<GenreSection />)
+    renderWithRouter(<GenreSection />)
     for (const genre of GENRES) {
       expect(screen.getByRole('heading', { name: genre.label })).toBeInTheDocument()
     }
@@ -28,7 +32,7 @@ describe('GenreSection', () => {
     })
     vi.stubGlobal('fetch', fetchMock)
 
-    render(<GenreSection />)
+    renderWithRouter(<GenreSection />)
     // A book title renders twice per card (cover art + caption), so use
     // findAllByText and just require at least one match per genre.
     expect((await screen.findAllByText('Book in science_fiction')).length).toBeGreaterThan(0)
@@ -45,7 +49,7 @@ describe('GenreSection', () => {
     })
     vi.stubGlobal('fetch', fetchMock)
 
-    render(<GenreSection />)
+    renderWithRouter(<GenreSection />)
     expect((await screen.findAllByText('Working book')).length).toBeGreaterThan(0)
     await waitFor(() =>
       expect(screen.getByText(/couldn.t load romance books/i)).toBeInTheDocument(),
@@ -64,7 +68,7 @@ describe('GenreSection', () => {
     })
     vi.stubGlobal('fetch', fetchMock)
 
-    render(<GenreSection />)
+    renderWithRouter(<GenreSection />)
     const retryButtons = await screen.findAllByRole('button', { name: /try again/i })
     expect(retryButtons.length).toBe(1)
 

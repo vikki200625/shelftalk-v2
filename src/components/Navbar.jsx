@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
+import { useAuth } from '../context/AuthContext'
 
 const LINKS = [
   { label: 'Browse', href: '#trending' },
@@ -10,6 +11,12 @@ const LINKS = [
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const { user, signOut } = useAuth()
+
+  const handleSignOut = async () => {
+    await signOut()
+    setMenuOpen(false)
+  }
 
   return (
     <nav className="navbar">
@@ -39,12 +46,29 @@ export default function Navbar() {
         </div>
       </div>
       <div className="nav-right">
-        <a className="nav-signin" href="#">
-          Sign in
-        </a>
-        <a className="btn-get-started" href="#community">
-          Get Started
-        </a>
+        {user ? (
+          <>
+            <span className="nav-user-email">
+              {user.email}
+            </span>
+            <button
+              className="nav-signout"
+              onClick={handleSignOut}
+              type="button"
+            >
+              Sign out
+            </button>
+          </>
+        ) : (
+          <>
+            <Link className="nav-signin" to="/signin">
+              Sign in
+            </Link>
+            <Link className="btn-get-started" to="/signup">
+              Get Started
+            </Link>
+          </>
+        )}
         <button
           aria-expanded={menuOpen}
           aria-label="Toggle menu"
@@ -69,9 +93,28 @@ export default function Navbar() {
               {link.label}
             </a>
           ))}
-          <a className="nav-menu-mobile-link" href="#" onClick={() => setMenuOpen(false)}>
-            Sign in
-          </a>
+          {user ? (
+            <>
+              <span className="nav-menu-mobile-link nav-menu-mobile-email">
+                {user.email}
+              </span>
+              <button
+                className="nav-menu-mobile-link nav-menu-mobile-signout"
+                onClick={handleSignOut}
+                type="button"
+              >
+                Sign out
+              </button>
+            </>
+          ) : (
+            <Link
+              className="nav-menu-mobile-link"
+              to="/signin"
+              onClick={() => setMenuOpen(false)}
+            >
+              Sign in
+            </Link>
+          )}
         </div>
       )}
     </nav>

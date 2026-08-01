@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router'
 import BookCover from './BookCover'
 import { searchBooks } from '../lib/openlibrary'
 
@@ -14,6 +15,7 @@ const DEBOUNCE_MS = 300
  *   links ("Dune") into the search box.
  */
 export default function SearchBar({ query: externalQuery, onQueryChange, inputRef: externalInputRef }) {
+  const navigate = useNavigate()
   const [internalQuery, setInternalQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
   const [status, setStatus] = useState('idle') // idle | loading | results | empty | error
@@ -94,9 +96,8 @@ export default function SearchBar({ query: externalQuery, onQueryChange, inputRe
       event.preventDefault()
       setActiveIndex((i) => (i <= 0 ? books.length - 1 : i - 1))
     } else if (event.key === 'Enter' && activeIndex >= 0) {
-      // Book detail page is a future slice — for now Enter just keeps the
-      // highlight and leaves the dropdown open.
       event.preventDefault()
+      openBook(books[activeIndex])
     } else if (event.key === 'Home') {
       event.preventDefault()
       setActiveIndex(0)
@@ -107,6 +108,13 @@ export default function SearchBar({ query: externalQuery, onQueryChange, inputRe
   }
 
   const dropdownId = 'search-dropdown'
+
+  // Jump to the book's detail page, passing the book so the header can
+  // render instantly.
+  function openBook(book) {
+    if (!book?.key) return
+    navigate(`/book/${book.key.split('/').pop()}`, { state: { book } })
+  }
 
   return (
     <div className="search" ref={containerRef}>
@@ -157,6 +165,7 @@ export default function SearchBar({ query: externalQuery, onQueryChange, inputRe
                   role="option"
                   aria-selected={index === activeIndex}
                   onMouseEnter={() => setActiveIndex(index)}
+                  onClick={() => openBook(book)}
                 >
                   <BookCover book={book} variant="spine" />
                   <div>

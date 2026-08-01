@@ -1,7 +1,13 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
+import { MemoryRouter, Route, Routes } from 'react-router'
 import userEvent from '@testing-library/user-event'
 import SearchBar from './SearchBar'
+
+// SearchBar uses useNavigate — it must render inside a Router.
+function renderWithRouter(ui) {
+  return render(<MemoryRouter>{ui}</MemoryRouter>)
+}
 
 function deferred() {
   let resolve
@@ -22,7 +28,7 @@ const ALCHEMIST_DOC = {
 describe('SearchBar', () => {
   it('shows a hint when focused but empty', async () => {
     const user = userEvent.setup()
-    render(<SearchBar />)
+    renderWithRouter(<SearchBar />)
     await user.click(screen.getByPlaceholderText(/search by title/i))
     expect(screen.getByText(/type to search/i)).toBeInTheDocument()
   })
@@ -35,7 +41,7 @@ describe('SearchBar', () => {
     })
     vi.stubGlobal('fetch', fetchMock)
 
-    render(<SearchBar />)
+    renderWithRouter(<SearchBar />)
     const input = screen.getByPlaceholderText(/search by title/i)
     await user.type(input, 'alchem')
 
@@ -52,7 +58,7 @@ describe('SearchBar', () => {
     vi.stubGlobal('fetch', fetchMock)
     const user = userEvent.setup()
 
-    render(<SearchBar />)
+    renderWithRouter(<SearchBar />)
     const input = screen.getByPlaceholderText(/search by title/i)
     await user.click(input)
     await user.type(input, '   ')
@@ -69,7 +75,7 @@ describe('SearchBar', () => {
       .mockResolvedValueOnce({ ok: true, json: async () => ({ docs: [ALCHEMIST_DOC] }) })
     vi.stubGlobal('fetch', fetchMock)
 
-    render(<SearchBar />)
+    renderWithRouter(<SearchBar />)
     await user.type(screen.getByPlaceholderText(/search by title/i), 'alchem')
     await waitFor(() => expect(screen.getByText(/something went wrong/i)).toBeInTheDocument())
 
@@ -81,14 +87,14 @@ describe('SearchBar', () => {
     const user = userEvent.setup()
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ docs: [] }) }))
 
-    render(<SearchBar />)
+    renderWithRouter(<SearchBar />)
     await user.type(screen.getByPlaceholderText(/search by title/i), 'zzz')
     await waitFor(() => expect(screen.getByText(/no books found/i)).toBeInTheDocument())
   })
 
   it('closes the dropdown when clicking outside', async () => {
     const user = userEvent.setup()
-    render(<SearchBar />)
+    renderWithRouter(<SearchBar />)
     await user.click(screen.getByPlaceholderText(/search by title/i))
     expect(screen.getByText(/type to search/i)).toBeInTheDocument()
 
@@ -98,7 +104,7 @@ describe('SearchBar', () => {
 
   it('closes the dropdown on Escape', async () => {
     const user = userEvent.setup()
-    render(<SearchBar />)
+    renderWithRouter(<SearchBar />)
     const input = screen.getByPlaceholderText(/search by title/i)
     await user.click(input)
     expect(screen.getByText(/type to search/i)).toBeInTheDocument()
@@ -121,7 +127,7 @@ describe('SearchBar', () => {
       })
     vi.stubGlobal('fetch', fetchMock)
 
-    render(<SearchBar />)
+    renderWithRouter(<SearchBar />)
     const input = screen.getByPlaceholderText(/search by title/i)
     await user.type(input, 'al')
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1)) // first request pending
@@ -152,7 +158,7 @@ describe('SearchBar', () => {
       }),
     )
 
-    render(<SearchBar />)
+    renderWithRouter(<SearchBar />)
     const input = screen.getByPlaceholderText(/search by title/i)
     await user.type(input, 'books')
     await waitFor(() => expect(screen.getByText('First Book')).toBeInTheDocument())
@@ -181,7 +187,7 @@ describe('SearchBar', () => {
     const onQueryChange = vi.fn((value) => {
       query = value
     })
-    const { rerender } = render(
+    const { rerender } = renderWithRouter(
       <SearchBar query={query} onQueryChange={onQueryChange} />,
     )
 
@@ -189,7 +195,64 @@ describe('SearchBar', () => {
     expect(onQueryChange).toHaveBeenCalled()
 
     // Simulate the parent re-rendering with the new query value.
-    rerender(<SearchBar query="alchem" onQueryChange={onQueryChange} />)
+    rerender(
+      <MemoryRouter>
+        <SearchBar query="alchem" onQueryChange={onQueryChange} />
+      </MemoryRouter>,
+    )
     await waitFor(() => expect(screen.getByText('The Alchemist')).toBeInTheDocument())
+  })
+
+  it('navigates to the detail page when a result is clicked', async () => {
+    const user = userEvent.setup()
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({ ok: true, json: async () => ({ docs: [ALCHEMIST_DOC] }) }),
+    )
+
+    render(
+      <MemoryRouter>
+        <SearchBar />
+        <Routes>
+          <Route path="/book/:key" element={<div>DETAIL PAGE</div>} />
+        </Routes>
+      </MemoryRouter>,
+    )
+    await user.type(screen.getByPlaceholderText(/search by title/i), 'alchem')
+    await waitFor(() => expect(screen.getByText('The Alchemist')).toBeInTheDocument())
+
+    await user.click(screen.getByText('The Alchemist'))
+    expect(screen.getByText('DETAIL PAGE')).toBeInTheDocument()
+  })
+
+  it('navigates with Enter on the highlighted result', async () => {
+    const user = userEvent.setup()
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          docs: [
+            { key: '/works/OL1W', title: 'First Book', author_name: ['A'] },
+            { key: '/works/OL2W', title: 'Second Book', author_name: ['B'] },
+          ],
+        }),
+      }),
+    )
+
+    render(
+      <MemoryRouter>
+        <SearchBar />
+        <Routes>
+          <Route path="/book/:key" element={<div>DETAIL PAGE</div>} />
+        </Routes>
+      </MemoryRouter>,
+    )
+    await user.type(screen.getByPlaceholderText(/search by title/i), 'books')
+    await waitFor(() => expect(screen.getByText('First Book')).toBeInTheDocument())
+
+    await user.keyboard('{ArrowDown}')
+    await user.keyboard('{Enter}')
+    expect(screen.getByText('DETAIL PAGE')).toBeInTheDocument()
   })
 })
