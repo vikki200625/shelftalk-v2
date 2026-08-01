@@ -100,6 +100,12 @@ button {
   transition: color 0.2s;
 }
 
+.section-status {
+  font-size: var(--text-caption);
+  color: var(--ink-muted);
+  margin: var(--space-sm) 0;
+}
+
 .section-link:hover {
   color: var(--brand-primary-hover);
 }

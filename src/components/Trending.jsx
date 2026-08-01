@@ -1,57 +1,33 @@
+import { useEffect, useState } from 'react'
 import FadeIn from './FadeIn'
+import BookCard from './BookCard'
+import { fetchTrending } from '../lib/openlibrary'
 
-const BOOKS = [
-  {
-    title: 'Dune',
-    author: 'Frank Herbert',
-    rating: '4.8',
-    kicker: 'Sci-Fi Epic',
-    cover: 'cover--forest',
-    darkText: false,
-  },
-  {
-    title: 'The Alchemist',
-    author: 'Paulo Coelho',
-    rating: '4.5',
-    kicker: 'Fiction',
-    cover: 'cover--gold',
-    darkText: true,
-  },
-  {
-    title: 'Atomic Habits',
-    author: 'James Clear',
-    rating: '4.7',
-    kicker: 'Self-Help',
-    cover: 'cover--terracotta',
-    darkText: false,
-  },
-  {
-    title: '1984',
-    author: 'George Orwell',
-    rating: '4.6',
-    kicker: 'Classic',
-    cover: 'cover--sage',
-    darkText: false,
-  },
-  {
-    title: 'Pride & Prejudice',
-    author: 'Jane Austen',
-    rating: '4.7',
-    kicker: 'Romance',
-    cover: 'cover--olive',
-    darkText: false,
-  },
-  {
-    title: 'The Name of the Wind',
-    author: 'Patrick Rothfuss',
-    rating: '4.6',
-    kicker: 'Fantasy',
-    cover: 'cover--umber',
-    darkText: false,
-  },
-]
-
+/**
+ * Trending — the "Trending with readers right now" section. Fetches
+ * OpenLibrary's trending feed and renders it with the shared BookCard.
+ */
 export default function Trending() {
+  const [status, setStatus] = useState('loading') // loading | error | ready
+  const [books, setBooks] = useState([])
+  const [attempt, setAttempt] = useState(0)
+
+  useEffect(() => {
+    const controller = new AbortController()
+    setStatus('loading')
+    fetchTrending({ signal: controller.signal })
+      .then((results) => {
+        if (controller.signal.aborted) return
+        setBooks(results)
+        setStatus('ready')
+      })
+      .catch((error) => {
+        if (error.name === 'AbortError') return
+        setStatus('error')
+      })
+    return () => controller.abort()
+  }, [attempt])
+
   return (
     <FadeIn className="section section--trending" id="trending">
       <div className="section-head">
@@ -60,20 +36,26 @@ export default function Trending() {
           See all →
         </a>
       </div>
-      <div className="trending-row">
-        {BOOKS.map((book) => (
-          <div className="trend-card" key={book.title}>
-            <div className={`trend-cover ${book.cover}`}>
-              <span className="trend-cover-kicker">{book.kicker}</span>
-              <span className="trend-cover-title">{book.title}</span>
-              <span className="trend-cover-author">{book.author}</span>
-            </div>
-            <p className="trend-title">{book.title}</p>
-            <p className="trend-author">{book.author}</p>
-            <p className="trend-rating">★ {book.rating}</p>
-          </div>
-        ))}
-      </div>
+
+      {status === 'loading' && <p className="section-status">Loading trending books…</p>}
+      {status === 'error' && (
+        <div className="section-status">
+          <p>Couldn&apos;t load trending books.</p>
+          <button className="retry-btn" type="button" onClick={() => setAttempt((n) => n + 1)}>
+            Try again
+          </button>
+        </div>
+      )}
+      {status === 'ready' && books.length === 0 && (
+        <p className="section-status">No trending books right now.</p>
+      )}
+      {status === 'ready' && books.length > 0 && (
+        <div className="trending-row">
+          {books.map((book, index) => (
+            <BookCard key={book.key ?? `trend-${index}`} book={book} />
+          ))}
+        </div>
+      )}
     </FadeIn>
   )
 }
