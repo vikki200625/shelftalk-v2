@@ -9,6 +9,8 @@ import SignIn from './pages/SignIn'
 import SignUp from './pages/SignUp'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
+import Profile from './pages/Profile'
+import Settings from './pages/Settings'
 
 export default function App() {
   return (
@@ -23,6 +25,8 @@ export default function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/profile/:username" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </main>
       <Footer />

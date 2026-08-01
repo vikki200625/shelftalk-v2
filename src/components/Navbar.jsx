@@ -47,9 +47,13 @@ export default function Navbar() {
       <div className="nav-right">
         {user ? (
           <>
-            <span className="nav-user-email">
+            <Link
+              className="nav-user-email"
+              to="/settings"
+              title="Your profile"
+            >
               {user.email}
-            </span>
+            </Link>
             <button
               className="nav-signout"
               onClick={handleSignOut}
@@ -94,9 +98,13 @@ export default function Navbar() {
           ))}
           {user ? (
             <>
-              <span className="nav-menu-mobile-link nav-menu-mobile-email">
+              <Link
+                className="nav-menu-mobile-link nav-menu-mobile-email"
+                onClick={() => setMenuOpen(false)}
+                to="/settings"
+              >
                 {user.email}
-              </span>
+              </Link>
               <button
                 className="nav-menu-mobile-link nav-menu-mobile-signout"
                 onClick={handleSignOut}
