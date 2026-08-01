@@ -8,6 +8,8 @@ import {
   searchBooks,
   fetchTrending,
   fetchGenreBooks,
+  mapWorkDetail,
+  fetchWork,
 } from './openlibrary'
 
 describe('coverUrl', () => {
@@ -102,6 +104,85 @@ describe('mapTrendingWork', () => {
     expect(book.rating).toBeNull()
     expect(book.authorName).toBe('George Orwell')
     expect(book.coverUrl).toBe('https://covers.openlibrary.org/b/id/7-L.jpg')
+  })
+})
+
+describe('mapWorkDetail', () => {
+  it('maps a full work record', () => {
+    const detail = mapWorkDetail({
+      title: 'Dune',
+      description: 'A sci-fi epic.',
+      subjects: ['Fiction', 'Science', 'Junk'],
+      covers: [-1, 5, 6],
+      first_publish_date: '1965-08-01',
+    })
+    expect(detail).toEqual({
+      title: 'Dune',
+      description: 'A sci-fi epic.',
+      subjects: ['Fiction', 'Science', 'Junk'],
+      largeCoverUrl: 'https://covers.openlibrary.org/b/id/5-L.jpg',
+      firstPublishYear: 1965,
+    })
+  })
+
+  it('normalizes the description object form and skips -1 covers', () => {
+    const detail = mapWorkDetail({
+      title: 'T',
+      description: { type: '/type/text', value: 'Object form.' },
+      covers: [-1],
+    })
+    expect(detail.description).toBe('Object form.')
+    expect(detail.largeCoverUrl).toBeNull()
+  })
+
+  it('caps subjects at six and tolerates a missing year', () => {
+    const many = Array.from({ length: 10 }, (_, i) => `Subject ${i}`)
+    const detail = mapWorkDetail({ title: 'T', subjects: many })
+    expect(detail.subjects).toHaveLength(6)
+    expect(detail.firstPublishYear).toBeNull()
+  })
+})
+
+describe('fetchWork', () => {
+  afterEach(() => vi.unstubAllGlobals())
+
+  it('normalizes a /works/ prefix and fetches the work JSON', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue({ ok: true, json: async () => ({ title: 'Dune', subjects: [] }) })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const detail = await fetchWork('/works/OL45804W')
+    expect(detail.title).toBe('Dune')
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://openlibrary.org/works/OL45804W.json',
+      expect.objectContaining({ signal: undefined }),
+    )
+  })
+
+  it('follows a redirect record to the target work', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ type: { key: '/type/redirect' }, location: '/works/OL45804W' }),
+      })
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ title: 'Dune', subjects: [] }) })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const detail = await fetchWork('OLOLDW')
+    expect(detail.title).toBe('Dune')
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('throws when the redirect target is also a redirect', async () => {
+    const redirect = () => ({
+      ok: true,
+      json: async () => ({ type: { key: '/type/redirect' }, location: '/works/OLOTHERW' }),
+    })
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValueOnce(redirect()).mockResolvedValueOnce(redirect()))
+
+    await expect(fetchWork('OLOLDW')).rejects.toThrow(/redirect/i)
   })
 })
 

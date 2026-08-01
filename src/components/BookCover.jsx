@@ -37,6 +37,24 @@ export default function BookCover({ book, variant = 'card' }) {
     return <div className={`book-spine ${spineClass}`} aria-hidden="true" />
   }
 
+  if (variant === 'large') {
+    if (showImage) {
+      return (
+        <img
+          className="detail-cover-image"
+          src={book.coverUrl}
+          alt={book.title}
+          onError={() => setImgFailed(true)}
+        />
+      )
+    }
+    return (
+      <div className={`detail-cover-fallback ${book.fallbackCover}`}>
+        <span className="detail-cover-title">{book.title}</span>
+      </div>
+    )
+  }
+
   return (
     <div className={`trend-cover ${showImage ? 'trend-cover--image ' : ''}${book.fallbackCover}`}>
       {showImage ? (

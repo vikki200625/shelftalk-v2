@@ -97,6 +97,28 @@ describe('landing page', () => {
     })
   })
 
+  it('renders the book detail page at /book/:key', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ title: 'Dune', description: 'A sci-fi epic.', subjects: [], covers: [] }),
+      }),
+    )
+
+    renderApp(['/book/OL45804W'])
+    expect(await screen.findByRole('heading', { name: 'Dune' })).toBeInTheDocument()
+    expect(screen.getByText('A sci-fi epic.')).toBeInTheDocument()
+  })
+
+  it('shows the book header instantly from router state', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ title: 'Dune', subjects: [], covers: [] }) }))
+
+    renderApp([{ pathname: '/book/OL1W', state: { book: { key: '/works/OL1W', title: 'Dune', authorName: 'Frank Herbert' } } }])
+    expect(screen.getByRole('heading', { name: 'Dune' })).toBeInTheDocument()
+    expect(screen.getByText('Frank Herbert')).toBeInTheDocument()
+  })
+
   it('closes the search dropdown when clicking outside', async () => {
     const user = userEvent.setup()
     const { container } = renderApp()

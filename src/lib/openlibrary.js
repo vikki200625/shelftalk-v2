@@ -102,3 +102,42 @@ export function fetchGenreBooks(slug, { signal, limit = 12, base } = {}) {
     (Array.isArray(data.works) ? data.works : []).map((work, i) => mapSubjectWork(work, i, base)),
   )
 }
+
+// works/{key}.json → detail. `description` can be a plain string OR a
+// {type, value} object; `covers` may contain -1 placeholders.
+export function mapWorkDetail(work) {
+  const description =
+    typeof work.description === 'string'
+      ? work.description
+      : (work.description && work.description.value) || null
+  const subjects = Array.isArray(work.subjects) ? work.subjects.slice(0, 6) : []
+  const coverId = Array.isArray(work.covers)
+    ? work.covers.find((id) => Number.isInteger(id) && id > 0)
+    : null
+  const year = work.first_publish_date
+    ? Number.parseInt(String(work.first_publish_date), 10) || null
+    : null
+  return {
+    title: work.title ?? null,
+    description,
+    subjects,
+    largeCoverUrl: coverUrl(coverId, 'L'),
+    firstPublishYear: year,
+  }
+}
+
+// Some work keys are redirects to a merged work
+// ({type:{key:'/type/redirect'}, location:'/works/OLxxxxxW'}) — follow
+// exactly one hop, then give up if the target is also a redirect.
+export async function fetchWork(key, { signal } = {}) {
+  let workKey = String(key).replace(/^\/works\//, '')
+  let work = await getJson(`${BASE}/works/${workKey}.json`, { signal })
+  if (work.type?.key === '/type/redirect' && work.location) {
+    const target = String(work.location).replace(/^\/works\//, '')
+    work = await getJson(`${BASE}/works/${target}.json`, { signal })
+  }
+  if (work.type?.key === '/type/redirect') {
+    throw new Error('OpenLibrary work redirect could not be resolved')
+  }
+  return mapWorkDetail(work)
+}

@@ -1431,3 +1431,115 @@ button {
     transform: none !important;
   }
 }
+
+/* ---------- book detail page ---------- */
+.detail {
+  padding-top: var(--space-lg);
+}
+
+.detail-back {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--text-caption);
+  font-weight: 700;
+  color: var(--brand-primary);
+  margin-bottom: var(--space-lg);
+  transition: color 0.2s;
+}
+
+.detail-back:hover {
+  color: var(--brand-primary-hover);
+}
+
+.detail-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.detail-cover-image,
+.detail-cover-fallback {
+  width: 220px;
+  height: 320px;
+  border-radius: var(--radius-sm) var(--radius-md) var(--radius-md) var(--radius-sm);
+  box-shadow: var(--shadow-book-2xl);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.detail-cover-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-sm);
+  border-left: 4px solid rgba(255, 255, 255, 0.3);
+}
+
+.detail-cover-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-headline-card);
+  font-weight: 600;
+  color: var(--brand-surface);
+}
+
+.detail-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-headline-section);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--ink);
+  margin-bottom: var(--space-xs);
+}
+
+.detail-author {
+  font-size: var(--text-body-lg);
+  color: var(--ink-muted);
+  margin-bottom: var(--space-xs);
+}
+
+.detail-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.detail-meta-item {
+  font-size: var(--text-caption);
+  color: var(--ink-muted);
+}
+
+.detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.detail-tag {
+  background: var(--brand-sage);
+  color: var(--brand-primary);
+  font-size: var(--text-label);
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+}
+
+.detail-description {
+  font-size: var(--text-body-md);
+  line-height: var(--leading-normal);
+  color: var(--ink-muted);
+  max-width: 720px;
+}
+
+@media (min-width: 768px) {
+  .detail-header {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
