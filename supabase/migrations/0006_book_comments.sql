@@ -18,7 +18,7 @@
 CREATE TABLE IF NOT EXISTS public.book_comments (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   book_key text NOT NULL,                -- short OL work key, e.g. 'OL45804W'
-  user_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  user_id uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   body text NOT NULL CHECK (length(body) BETWEEN 1 AND 2000),
   created_at timestamptz NOT NULL DEFAULT now()
 );
