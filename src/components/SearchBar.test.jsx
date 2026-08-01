@@ -135,4 +135,61 @@ describe('SearchBar', () => {
     await waitFor(() => expect(screen.getByText('Second Result')).toBeInTheDocument())
     expect(screen.queryByText('STALE')).not.toBeInTheDocument()
   })
+
+  it('supports ArrowDown/ArrowUp keyboard navigation through results', async () => {
+    const user = userEvent.setup()
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          docs: [
+            { key: '/works/OL1W', title: 'First Book', author_name: ['A'] },
+            { key: '/works/OL2W', title: 'Second Book', author_name: ['B'] },
+            { key: '/works/OL3W', title: 'Third Book', author_name: ['C'] },
+          ],
+        }),
+      }),
+    )
+
+    render(<SearchBar />)
+    const input = screen.getByPlaceholderText(/search by title/i)
+    await user.type(input, 'books')
+    await waitFor(() => expect(screen.getByText('First Book')).toBeInTheDocument())
+
+    await user.keyboard('{ArrowDown}')
+    expect(input).toHaveAttribute('aria-activedescendant', 'search-option-0')
+    await user.keyboard('{ArrowDown}')
+    expect(input).toHaveAttribute('aria-activedescendant', 'search-option-1')
+    await user.keyboard('{ArrowUp}')
+    expect(input).toHaveAttribute('aria-activedescendant', 'search-option-0')
+    await user.keyboard('{End}')
+    expect(input).toHaveAttribute('aria-activedescendant', 'search-option-2')
+  })
+
+  it('exposes controlled query + onQueryChange for external wiring', async () => {
+    const user = userEvent.setup()
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ docs: [ALCHEMIST_DOC] }),
+      }),
+    )
+
+    let query = ''
+    const onQueryChange = vi.fn((value) => {
+      query = value
+    })
+    const { rerender } = render(
+      <SearchBar query={query} onQueryChange={onQueryChange} />,
+    )
+
+    await user.type(screen.getByPlaceholderText(/search by title/i), 'alchem')
+    expect(onQueryChange).toHaveBeenCalled()
+
+    // Simulate the parent re-rendering with the new query value.
+    rerender(<SearchBar query="alchem" onQueryChange={onQueryChange} />)
+    await waitFor(() => expect(screen.getByText('The Alchemist')).toBeInTheDocument())
+  })
 })

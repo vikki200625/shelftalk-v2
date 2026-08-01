@@ -61,6 +61,31 @@ describe('landing page', () => {
     })
   })
 
+  it('hero quick links trigger a real search', async () => {
+    const user = userEvent.setup()
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          docs: [{ key: '/works/OL1W', title: 'Dune', author_name: ['Frank Herbert'] }],
+        }),
+      }),
+    )
+
+    const { container } = render(<App />)
+    const duneLink = screen.getByRole('button', { name: 'Dune' })
+    await user.click(duneLink)
+
+    // The search input should now hold the quick-link title.
+    expect(screen.getByPlaceholderText(/search by title/i)).toHaveValue('Dune')
+    await waitFor(() => {
+      const dropdown = container.querySelector('.search-dropdown')
+      expect(dropdown).toBeInTheDocument()
+      expect(within(dropdown).getByText('Frank Herbert')).toBeInTheDocument()
+    })
+  })
+
   it('closes the search dropdown when clicking outside', async () => {
     const user = userEvent.setup()
     const { container } = render(<App />)

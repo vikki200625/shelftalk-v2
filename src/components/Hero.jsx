@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment, useRef, useState } from 'react'
 import FadeIn from './FadeIn'
 import SearchBar from './SearchBar'
 import FloatingBooks from './FloatingBooks'
@@ -12,6 +12,19 @@ const STATS = [
 ]
 
 export default function Hero() {
+  const [searchQuery, setSearchQuery] = useState('')
+  const searchInputRef = useRef(null)
+
+  // Quick links behave like a real search: they fill the box, focus it,
+  // and let the debounced fetch run — no dead href="#".
+  // Focus is deferred past the click event so the document-level
+  // outside-click handler (which sees the button as "outside") doesn't
+  // instantly close the dropdown the focus just opened.
+  function handleQuickSearch(title) {
+    setSearchQuery(title)
+    setTimeout(() => searchInputRef.current?.focus(), 0)
+  }
+
   return (
     <FadeIn className="hero">
       {/* Left: copy, search, trending, stats */}
@@ -26,16 +39,20 @@ export default function Hero() {
           literature in a cozy digital corner.
         </p>
 
-        <SearchBar />
+        <SearchBar query={searchQuery} onQueryChange={setSearchQuery} inputRef={searchInputRef} />
 
         <div className="trending">
           <span className="trending-label">Trending:</span>
           {TRENDING.map((title, index) => (
             <Fragment key={title}>
               {index > 0 && <span> · </span>}
-              <a className="trending-link" href="#">
+              <button
+                className="trending-link"
+                type="button"
+                onClick={() => handleQuickSearch(title)}
+              >
                 {title}
-              </a>
+              </button>
             </Fragment>
           ))}
         </div>

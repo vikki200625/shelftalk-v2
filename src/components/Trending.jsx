@@ -32,9 +32,6 @@ export default function Trending() {
     <FadeIn className="section section--trending" id="trending">
       <div className="section-head">
         <h2 className="section-title">Trending with readers right now</h2>
-        <a className="section-link" href="#trending">
-          See all →
-        </a>
       </div>
 
       {status === 'loading' && <p className="section-status">Loading trending books…</p>}

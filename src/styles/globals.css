@@ -418,7 +418,8 @@ button {
   transition: background-color 0.2s;
 }
 
-.search-result:hover {
+.search-result:hover,
+.search-result--active {
   background: var(--brand-bg);
 }
 
@@ -444,6 +445,14 @@ button {
 
 .book-spine--terracotta {
   background: var(--cover-terracotta);
+}
+
+.book-spine--olive {
+  background: var(--cover-olive);
+}
+
+.book-spine--umber {
+  background: var(--cover-umber);
 }
 
 /* real cover thumbnail inside a search result row */
@@ -486,6 +495,12 @@ button {
 }
 
 .trending-link {
+  font: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--ink-muted);
   transition: color 0.2s;
 }
 
@@ -1284,7 +1299,7 @@ button {
   justify-content: center;
   font-size: 10px;
   font-weight: 700;
-  color: #fff;
+  color: var(--brand-surface);
 }
 
 .avatar--lg {
