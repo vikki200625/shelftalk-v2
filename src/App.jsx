@@ -1,6 +1,7 @@
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import Trending from './components/Trending'
+import GenreSection from './components/GenreSection'
 import Features from './components/Features'
 import Testimonials from './components/Testimonials'
 import CtaBand from './components/CtaBand'
@@ -13,6 +14,7 @@ export default function App() {
       <main className="page-main">
         <Hero />
         <Trending />
+        <GenreSection />
         <Features />
         <Testimonials />
         <CtaBand />

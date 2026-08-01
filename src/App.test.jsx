@@ -75,6 +75,7 @@ describe('landing page', () => {
   it('renders all landing page sections', () => {
     render(<App />)
     expect(screen.getByRole('heading', { name: /trending with readers/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /browse by genre/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /everything your shelf needs/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /readers are talking/i })).toBeInTheDocument()
     expect(

@@ -106,6 +106,21 @@ button {
   margin: var(--space-sm) 0;
 }
 
+.genre-row {
+  margin-bottom: var(--space-xl);
+}
+
+.genre-row-head {
+  margin-bottom: var(--space-sm);
+}
+
+.genre-row-label {
+  font-family: var(--font-serif);
+  font-size: var(--text-headline-card);
+  font-weight: 600;
+  color: var(--ink);
+}
+
 .section-link:hover {
   color: var(--brand-primary-hover);
 }
