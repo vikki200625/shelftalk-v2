@@ -8,6 +8,8 @@ const LINKS = [
   { label: 'Library', to: '/library' },
   { label: 'Book Clubs', href: '#testimonials' },
   { label: 'Find Friends', to: '/find-friends' },
+  { label: 'Chat', to: '/chat' },
+  { label: 'Messages', to: '/messages' },
 ]
 
 export default function Navbar() {

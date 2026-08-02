@@ -13,6 +13,8 @@ import Profile from './pages/Profile'
 import Settings from './pages/Settings'
 import FindFriends from './pages/FindFriends'
 import Library from './pages/Library'
+import GlobalChat from './pages/GlobalChat'
+import PrivateChat from './pages/PrivateChat'
 import Browse from './pages/Browse'
 
 export default function App() {
@@ -33,6 +35,9 @@ export default function App() {
           <Route path="/settings" element={<Settings />} />
           <Route path="/find-friends" element={<FindFriends />} />
           <Route path="/library" element={<Library />} />
+          <Route path="/chat" element={<GlobalChat />} />
+          <Route path="/messages" element={<PrivateChat />} />
+          <Route path="/messages/:channelId" element={<PrivateChat />} />
         </Routes>
       </main>
       <Footer />
