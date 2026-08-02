@@ -12,6 +12,7 @@
   --brand-primary-hover: #143a2c; /* darker green on hover              */
   --brand-accent: #c9a227;        /* brass — highlights, premium marks  */
   --brand-accent-deep: #8a6d1f;   /* darker brass — eyebrow text        */
+  --brand-accent-soft: rgba(201, 162, 39, 0.1); /* brass at 10% — hover washes */
   --brand-cream-soft: #f5ebd3;    /* soft cream — eyebrow / CTA hover   */
   --brand-outline: #e7e0d0;       /* sand — thin borders                */
   --brand-sage: rgba(63, 125, 90, 0.1);   /* success chip background    */

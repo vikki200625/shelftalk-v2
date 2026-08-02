@@ -3295,7 +3295,7 @@ button {
 }
 
 .browse-load-more:hover:not(:disabled) {
-  background: rgba(201, 162, 39, 0.1);
+  background: var(--brand-accent-soft);
   color: var(--brand-accent-deep);
 }
 
@@ -3397,6 +3397,19 @@ button {
 
 .bento-card:hover .bento-accent {
   background: var(--brand-primary);
+}
+
+/* per-card tone accents (hover still unifies on primary) */
+.bento--forest .bento-accent {
+  background: var(--brand-primary);
+}
+
+.bento--brass .bento-accent {
+  background: var(--cover-gold-deep);
+}
+
+.bento--sage .bento-accent {
+  background: var(--cover-sage-deep);
 }
 
 .bento-body {

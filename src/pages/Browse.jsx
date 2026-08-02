@@ -134,8 +134,10 @@ export default function Browse() {
 
       {searching ? (
         /* Search results state */
-        <section className="browse-results" aria-live="polite">
-          <div className="browse-results-head">
+        <section className="browse-results">
+          {/* Live region on the header only, so "load more" appends don't
+              re-announce the whole grid to screen readers. */}
+          <div className="browse-results-head" aria-live="polite">
             <span className="browse-results-eyebrow">Search results for</span>
             <h2 className="browse-results-title">“{debouncedQuery}”</h2>
           </div>
