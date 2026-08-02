@@ -32,15 +32,10 @@ Shared status file between the two agents working on this project:
 - **2026-08-01 — Hermes**: Auth slice v1 — basic email/password sign-in/sign-up. Created Supabase client, AuthContext, SignIn/SignUp pages, ProtectedRoute, auth-aware Navbar. Removed Features + Testimonials sections, Community navbar link now redirects to /signup. Tests: 63/63 green, build clean. Files: `src/lib/supabase.js`, `src/context/AuthContext.jsx`, `src/pages/SignIn.jsx`, `src/pages/SignUp.jsx`, `src/components/ProtectedRoute.jsx`, `src/components/Auth.test.jsx`, `src/App.jsx`, `src/components/Navbar.jsx`, `src/styles/globals.css`, `.env`.
 - **2026-08-01 — Hermes**: Auth slice v2 — full auth flow overhaul. Username-based login, password validation (8+ chars, 1+ number, 1+ special), forgot password flow (username → email reset link), reset password page. New migration 0005 (username NOT NULL, email column in profiles, updated trigger). Tests: 80/80 green, build clean. Files: `supabase/migrations/0005_username_not_null.sql`, `src/pages/SignUp.jsx`, `src/pages/SignIn.jsx`, `src/pages/ForgotPassword.jsx`, `src/pages/ResetPassword.jsx`, `src/context/AuthContext.jsx`, `src/components/Auth.test.jsx`, `src/App.jsx`, `src/styles/globals.css`, `src/lib/validate.js`.
 - **2026-08-01 — OpenClaude**: Book comments slice — `book_comments` table (migration 0006, RLS: everyone reads, only signed-in users write as themselves, authors edit/delete their own). `CommentSection` at the end of `/book/:key`: comment list (username + date + body), sign-in prompt for visitors, post form for authenticated users that refetches after posting. Tests mock the supabase module (thenable chain mirroring the real client). 87/87 green, build clean. Files: `supabase/migrations/0006_book_comments.sql`, `src/components/CommentSection.jsx` + `CommentSection.test.jsx`, `src/components/BookDetail.jsx` + `BookDetail.test.jsx`, `src/styles/globals.css`.
+ **2026-08-02 — Hermes**: Find Friends page — `/find-friends` route with search users by username, suggested profiles section, follower/following lists with counts. `UserCard` component (avatar, name, username, bio, follow button). Data layer: `searchProfiles`, `fetchSuggestedProfiles`, `fetchFollowers`, `fetchFollowing` functions in `profiles.js`. Navbar updated with "Find Friends" link. 6 tests, 111/111 total green, build clean. Files: `src/pages/FindFriends.jsx`, `src/components/UserCard.jsx`, `src/components/FindFriends.test.jsx`, `src/lib/profiles.js`, `src/App.jsx`, `src/components/Navbar.jsx`, `src/styles/globals.css`.
 
 ## In progress
 
-- **Hermes (2026-08-01)**: Profiles slice — public profile page + edit profile. Plan:
-  1. `/profile/:username` — public view: display name, avatar, bio, member since, shelf counts
-  2. `/settings` — edit own profile: display name, avatar URL, bio
-  3. Follow/unfollow button on other users' profiles (uses `user_follows` table)
-  4. Tests for all above
-  Files: `src/pages/Profile.jsx` (new), `src/pages/Settings.jsx` (new), `src/components/ProfileHeader.jsx` (new), `src/components/FollowButton.jsx` (new), `src/App.jsx`, `src/styles/globals.css`, tests.
 
 ## Up next
 
