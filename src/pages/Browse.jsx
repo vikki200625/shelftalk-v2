@@ -90,7 +90,8 @@ export default function Browse() {
 
   const searching = Boolean(debouncedQuery)
   const hasMore = numFound == null ? false : books.length < numFound
-  const ownProfileHref = `/profile/${profile?.username}`
+  // Fall back to /settings while the profile is still loading.
+  const ownProfileHref = profile?.username ? `/profile/${profile.username}` : '/settings'
 
   return (
     <div className="browse">

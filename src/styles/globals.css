@@ -2833,3 +2833,317 @@ button {
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   }
 }
+
+/* ---------- browse page ---------- */
+.browse-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-sm);
+  padding: var(--space-xl) 0 var(--space-xxl);
+}
+
+.browse-eyebrow {
+  font-size: var(--text-label);
+  font-weight: 700;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.browse-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-display-hero-mobile);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--ink);
+  max-width: 640px;
+}
+
+.browse-title em {
+  font-style: italic;
+  color: var(--brand-primary);
+}
+
+.browse-search-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  margin-top: var(--space-sm);
+}
+
+.browse-search-icon {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-muted);
+  pointer-events: none;
+}
+
+.browse-search-input {
+  width: 100%;
+  height: 60px;
+  padding: 0 24px 0 56px;
+  background: var(--brand-surface);
+  border: 1px solid var(--brand-outline);
+  border-radius: var(--radius-full);
+  font-size: var(--text-body-md);
+  color: var(--ink);
+  box-shadow: var(--shadow-surface);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.browse-search-input::placeholder {
+  color: var(--placeholder);
+}
+
+.browse-search-input:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: var(--ring-focus);
+}
+
+.browse-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-xs);
+  margin-top: var(--space-sm);
+}
+
+.browse-chip {
+  padding: 8px var(--space-md);
+  border: 1px solid var(--border-faint);
+  border-radius: var(--radius-full);
+  background: var(--brand-surface);
+  color: var(--ink-muted);
+  font-size: var(--text-caption);
+  font-weight: 600;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.browse-chip:hover {
+  background: var(--brand-cream-soft);
+  color: var(--brand-primary);
+}
+
+.browse-chip--active,
+.browse-chip--active:hover {
+  background: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: var(--brand-surface);
+}
+
+/* search results state */
+.browse-results-head {
+  margin-bottom: var(--space-lg);
+}
+
+.browse-results-eyebrow {
+  font-size: var(--text-caption);
+  color: var(--ink-muted);
+}
+
+.browse-results-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-headline-card);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  color: var(--ink);
+}
+
+@media (min-width: 768px) {
+  .browse-results-title {
+    font-size: var(--text-headline-section);
+  }
+}
+
+.browse-results-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md) var(--space-sm);
+}
+
+@media (min-width: 768px) {
+  .browse-results-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .browse-results-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+.browse-results-grid .trend-card {
+  width: 100%;
+}
+
+.browse-results-more {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-top: var(--space-xl);
+}
+
+.browse-load-more {
+  padding: 12px var(--space-xl);
+  border: 1px solid var(--brand-accent);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--brand-accent-deep);
+  font-size: var(--text-label);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.browse-load-more:hover:not(:disabled) {
+  background: rgba(201, 162, 39, 0.1);
+  color: var(--brand-accent-deep);
+}
+
+.browse-load-more:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* "Your Shelves Are Bare" empty state */
+.browse-empty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-sm);
+  padding: var(--space-xl);
+  border: 2px dashed var(--brand-outline);
+  border-radius: var(--radius-lg);
+  background: var(--brand-surface);
+}
+
+.browse-empty-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-full);
+  background: var(--brand-cream-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-xs);
+}
+
+.browse-empty-icon {
+  font-size: 32px;
+  color: var(--ink-muted);
+}
+
+.browse-empty-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-headline-card);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.browse-empty-sub {
+  font-size: var(--text-body-md);
+  line-height: var(--leading-normal);
+  color: var(--ink-muted);
+  max-width: 480px;
+}
+
+.browse-empty-cta {
+  margin-top: var(--space-xs);
+  text-transform: uppercase;
+}
+
+/* ---------- genre bento ---------- */
+.bento-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+}
+
+@media (min-width: 768px) {
+  .bento-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.bento-card {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  text-align: left;
+  background: var(--brand-surface);
+  border: 1px solid var(--brand-outline);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-surface);
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+
+.bento-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+.bento-accent {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: var(--brand-outline);
+  transition: background-color 0.3s;
+}
+
+.bento-card:hover .bento-accent {
+  background: var(--brand-primary);
+}
+
+.bento-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  padding-left: var(--space-sm);
+}
+
+.bento-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.bento-label {
+  font-family: var(--font-serif);
+  font-size: var(--text-headline-card);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  color: var(--ink);
+}
+
+.bento-icon {
+  color: var(--brand-outline);
+  font-size: 28px;
+  transition: color 0.3s;
+}
+
+.bento-card:hover .bento-icon {
+  color: var(--brand-primary);
+}
+
+.bento-count {
+  font-size: var(--text-caption);
+  color: var(--ink-muted);
+  margin-top: var(--space-sm);
+}
