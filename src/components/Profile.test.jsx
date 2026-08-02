@@ -77,9 +77,18 @@ describe('Avatar', () => {
 // ---- FollowButton ----
 
 describe('FollowButton', () => {
-  beforeEach(() => stubAuth())
+  beforeEach(() => {
+    stubAuth()
+    // Mock fetchFollowStatus to return false by default
+    supabaseMock.from.mockImplementation((table) => {
+      if (table === 'user_follows') {
+        return mockQuery({ data: null, error: null })
+      }
+      return mockQuery({ data: null, error: { message: 'not found' } })
+    })
+  })
 
-  it('shows Follow when not following', () => {
+  it('shows Follow when not following', async () => {
     render(
       <AuthProvider>
         <MemoryRouter>
@@ -87,10 +96,12 @@ describe('FollowButton', () => {
         </MemoryRouter>
       </AuthProvider>
     )
-    expect(screen.getByRole('button', { name: 'Follow' })).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Follow' })).toBeInTheDocument()
+    })
   })
 
-  it('shows Following when already following', () => {
+  it('shows Following when already following', async () => {
     render(
       <AuthProvider>
         <MemoryRouter>
@@ -98,8 +109,10 @@ describe('FollowButton', () => {
         </MemoryRouter>
       </AuthProvider>
     )
-    const btn = screen.getByRole('button', { name: 'Following' })
-    expect(btn).toHaveAttribute('aria-pressed', 'true')
+    await waitFor(() => {
+      const btn = screen.getByRole('button', { name: 'Following' })
+      expect(btn).toHaveAttribute('aria-pressed', 'true')
+    })
   })
 })
 
@@ -170,10 +183,11 @@ describe('Profile page', () => {
   it('shows Follow button on someone else\'s profile', async () => {
     const session = { user: { id: 'me', email: 'me@test.com' } }
     stubAuth(session)
-    stubFrom({
-      profiles: { data: profileRow, error: null },
-      user_follows: { data: [], error: null },
-      user_library: { data: [], error: null },
+    supabaseMock.from.mockImplementation((table) => {
+      if (table === 'profiles') return mockQuery({ data: profileRow, error: null })
+      if (table === 'user_follows') return mockQuery({ data: null, error: null })
+      if (table === 'user_library') return mockQuery({ data: [], error: null })
+      return mockQuery({ data: null, error: { message: 'not found' } })
     })
 
     render(

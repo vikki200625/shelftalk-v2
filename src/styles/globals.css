@@ -3011,6 +3011,13 @@ button {
   border-color: var(--brand-primary);
 }
 
+.chat-error {
+  font-size: var(--text-caption);
+  color: #c0392b;
+  padding: 0 var(--space-md);
+  text-align: center;
+}
+
 .chat-send-btn {
   padding: 0 var(--space-lg);
   background: var(--brand-primary);

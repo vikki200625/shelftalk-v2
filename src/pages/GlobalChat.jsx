@@ -8,6 +8,7 @@ export default function GlobalChat() {
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const messagesEndRef = useRef(null)
   const [userNames, setUserNames] = useState({})
 
@@ -37,9 +38,14 @@ export default function GlobalChat() {
     if (!newMessage.trim() || !user) return
 
     const { data, error } = await sendGlobalMessage(user.id, newMessage.trim())
-    if (!error && data) {
+    if (error) {
+      setError(error.message || 'Failed to send message')
+      return
+    }
+    if (data) {
       setMessages((prev) => [...prev, data])
       setNewMessage('')
+      setError(null)
     }
   }
 
@@ -109,6 +115,7 @@ export default function GlobalChat() {
             type="text"
             value={newMessage}
           />
+          {error && <p className="chat-error">{error}</p>}
           <button
             className="chat-send-btn"
             disabled={!newMessage.trim()}
