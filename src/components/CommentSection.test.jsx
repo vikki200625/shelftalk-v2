@@ -32,6 +32,15 @@ function stubSupabase({
 
   supabaseMock.from.mockImplementation((table) => {
     fromCalls += 1
+    // AuthContext fetches profiles on login — return a fake profile row
+    // so the chain resolves without crashing.
+    if (table === 'profiles') {
+      return {
+        select: vi.fn().mockReturnThis(),
+        eq: vi.fn().mockReturnThis(),
+        single: vi.fn().mockResolvedValue({ data: { id: session?.user?.id, username: 'me' }, error: null }),
+      }
+    }
     // Mirrors the real supabase chain: from().select().eq().order() returns
     // a thenable builder (the promise resolves when awaited).
     const chain = {

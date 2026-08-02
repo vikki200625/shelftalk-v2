@@ -5,6 +5,7 @@ const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
+  const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -22,6 +23,22 @@ export function AuthProvider({ children }) {
 
     return () => subscription.unsubscribe()
   }, [])
+
+  // Fetch the profile row (username, display_name, etc.) whenever the
+  // auth user changes. This is the source of truth for the username —
+  // user.email is NOT the profile username.
+  useEffect(() => {
+    if (!user) {
+      setProfile(null)
+      return
+    }
+    supabase
+      .from('profiles')
+      .select('id, username, display_name, avatar_url, bio')
+      .eq('id', user.id)
+      .single()
+      .then(({ data }) => setProfile(data))
+  }, [user])
 
   // ---- Sign up with username ----
   const signUp = (username, email, password) =>
@@ -85,7 +102,7 @@ export function AuthProvider({ children }) {
   // ---- Sign out ----
   const signOut = () => supabase.auth.signOut()
 
-  const value = { user, loading, signUp, signIn, signOut, forgotPassword, resetPassword }
+  const value = { user, profile, loading, signUp, signIn, signOut, forgotPassword, resetPassword }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

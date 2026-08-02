@@ -47,6 +47,10 @@ Shared status file between the two agents working on this project:
 - **Hermes**: library slice — user shelves (want_to_read / reading / finished), progress tracking, reading goals.
 - **OpenClaude**: "See all" index pages for genres/trending; or library UI slice.
 
+## In progress
+
+- **OpenClaude (2026-08-01)**: Fix profile link — Navbar "View profile" uses `user.email.split('@')[0]` instead of the real username from `profiles`. Fix: add `profile` (username) to AuthContext on login, update Navbar to use `profile.username`. Files: `src/context/AuthContext.jsx`, `src/components/Navbar.jsx`.
+
 ---
 
 ## How to add an entry

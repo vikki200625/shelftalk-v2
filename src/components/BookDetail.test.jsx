@@ -19,7 +19,15 @@ supabaseMock.auth.getSession.mockResolvedValue({ data: { session: null } })
 supabaseMock.auth.onAuthStateChange.mockImplementation(() => ({
   data: { subscription: { unsubscribe: vi.fn() } },
 }))
-supabaseMock.from.mockImplementation(() => {
+supabaseMock.from.mockImplementation((table) => {
+  // AuthContext fetches profiles on login — return a fake profile row.
+  if (table === 'profiles') {
+    return {
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      single: vi.fn().mockResolvedValue({ data: null, error: null }),
+    }
+  }
   // Mirrors the real supabase chain: from().select().eq().order() returns
   // a thenable builder (the promise resolves when awaited).
   const chain = {

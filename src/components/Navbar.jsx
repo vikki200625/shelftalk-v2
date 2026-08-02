@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router'
 import { useAuth } from '../context/AuthContext'
+import Avatar from './Avatar'
 
 const LINKS = [
   { label: 'Browse', href: '#trending' },
@@ -10,11 +11,25 @@ const LINKS = [
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const { user, signOut } = useAuth()
+  const [profileOpen, setProfileOpen] = useState(false)
+  const { user, profile, signOut } = useAuth()
+  const profileRef = useRef(null)
+
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setProfileOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const handleSignOut = async () => {
     await signOut()
     setMenuOpen(false)
+    setProfileOpen(false)
   }
 
   return (
@@ -46,22 +61,38 @@ export default function Navbar() {
       </div>
       <div className="nav-right">
         {user ? (
-          <>
-            <Link
-              className="nav-user-email"
-              to="/settings"
-              title="Your profile"
-            >
-              {user.email}
-            </Link>
+          <div className="nav-profile" ref={profileRef}>
             <button
-              className="nav-signout"
-              onClick={handleSignOut}
+              className="nav-avatar-btn"
+              onClick={() => setProfileOpen((open) => !open)}
               type="button"
+              aria-expanded={profileOpen}
+              aria-label="Profile menu"
             >
-              Sign out
+              <Avatar
+                username={profile?.username || 'reader'}
+                size={36}
+              />
             </button>
-          </>
+            {profileOpen && (
+              <div className="nav-profile-dropdown">
+                <Link
+                  className="nav-profile-link"
+                  to={`/profile/${profile?.username}`}
+                  onClick={() => setProfileOpen(false)}
+                >
+                  View profile
+                </Link>
+                <button
+                  className="nav-profile-signout"
+                  onClick={handleSignOut}
+                  type="button"
+                >
+                  Sign out
+                </button>
+              </div>
+            )}
+          </div>
         ) : (
           <>
             <Link className="nav-signin" to="/signin">
@@ -99,11 +130,18 @@ export default function Navbar() {
           {user ? (
             <>
               <Link
-                className="nav-menu-mobile-link nav-menu-mobile-email"
+                className="nav-menu-mobile-link"
+                onClick={() => setMenuOpen(false)}
+                to={`/profile/${profile?.username}`}
+              >
+                Profile
+              </Link>
+              <Link
+                className="nav-menu-mobile-link"
                 onClick={() => setMenuOpen(false)}
                 to="/settings"
               >
-                {user.email}
+                Settings
               </Link>
               <button
                 className="nav-menu-mobile-link nav-menu-mobile-signout"
