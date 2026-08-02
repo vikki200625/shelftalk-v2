@@ -12,6 +12,8 @@ import ResetPassword from './pages/ResetPassword'
 import Profile from './pages/Profile'
 import Settings from './pages/Settings'
 import FindFriends from './pages/FindFriends'
+import Library from './pages/Library'
+import Browse from './pages/Browse'
 
 export default function App() {
   return (
@@ -21,6 +23,7 @@ export default function App() {
       <main className="page-main">
         <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="/browse" element={<Browse />} />
           <Route path="/book/:key" element={<BookDetail />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
@@ -29,6 +32,7 @@ export default function App() {
           <Route path="/profile/:username" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/find-friends" element={<FindFriends />} />
+          <Route path="/library" element={<Library />} />
         </Routes>
       </main>
       <Footer />

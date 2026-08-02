@@ -4,8 +4,8 @@ import { useAuth } from '../context/AuthContext'
 import Avatar from './Avatar'
 
 const LINKS = [
-  { label: 'Browse', href: '#trending' },
-  { label: 'Library', href: '#features' },
+  { label: 'Browse', to: '/browse' },
+  { label: 'Library', to: '/library' },
   { label: 'Book Clubs', href: '#testimonials' },
   { label: 'Find Friends', to: '/find-friends' },
 ]

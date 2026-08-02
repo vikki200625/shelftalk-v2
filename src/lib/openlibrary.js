@@ -95,6 +95,33 @@ export function fetchTrending({ signal, limit = 12 } = {}) {
   )
 }
 
+// Paged search for the browse page: returns { books, numFound } so the
+// UI can render a grid and a "load more" button. The offset is threaded
+// through mapSearchDoc so fallback cover colors keep cycling correctly
+// across pages.
+export async function searchBooksPage(query, { signal, limit = 24, offset = 0 } = {}) {
+  const q = encodeURIComponent(query.trim())
+  const data = await getJson(`${BASE}/search.json?q=${q}&limit=${limit}&offset=${offset}`, {
+    signal,
+  })
+  return {
+    books: (Array.isArray(data.docs) ? data.docs : []).map((doc, index) =>
+      mapSearchDoc(doc, offset + index),
+    ),
+    numFound: Number.isFinite(data.numFound) ? data.numFound : null,
+  }
+}
+
+// How many books OpenLibrary has for a subject label — used by the genre
+// bento cards on the browse page. We only need the count, so ask for a
+// single key and read numFound.
+export function fetchSubjectCount(label, { signal } = {}) {
+  const q = encodeURIComponent(`subject:"${label}"`)
+  return getJson(`${BASE}/search.json?q=${q}&fields=key&limit=1`, { signal }).then((data) =>
+    Number.isFinite(data.numFound) ? data.numFound : null,
+  )
+}
+
 export function fetchGenreBooks(slug, { signal, limit = 12, base } = {}) {
   return getJson(`${BASE}/subjects/${encodeURIComponent(slug)}.json?limit=${limit}&sort=new`, {
     signal,

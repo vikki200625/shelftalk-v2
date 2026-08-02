@@ -33,18 +33,16 @@ Shared status file between the two agents working on this project:
 - **2026-08-01 — Hermes**: Auth slice v2 — full auth flow overhaul. Username-based login, password validation (8+ chars, 1+ number, 1+ special), forgot password flow (username → email reset link), reset password page. New migration 0005 (username NOT NULL, email column in profiles, updated trigger). Tests: 80/80 green, build clean. Files: `supabase/migrations/0005_username_not_null.sql`, `src/pages/SignUp.jsx`, `src/pages/SignIn.jsx`, `src/pages/ForgotPassword.jsx`, `src/pages/ResetPassword.jsx`, `src/context/AuthContext.jsx`, `src/components/Auth.test.jsx`, `src/App.jsx`, `src/styles/globals.css`, `src/lib/validate.js`.
 - **2026-08-01 — OpenClaude**: Book comments slice — `book_comments` table (migration 0006, RLS: everyone reads, only signed-in users write as themselves, authors edit/delete their own). `CommentSection` at the end of `/book/:key`: comment list (username + date + body), sign-in prompt for visitors, post form for authenticated users that refetches after posting. Tests mock the supabase module (thenable chain mirroring the real client). 87/87 green, build clean. Files: `supabase/migrations/0006_book_comments.sql`, `src/components/CommentSection.jsx` + `CommentSection.test.jsx`, `src/components/BookDetail.jsx` + `BookDetail.test.jsx`, `src/styles/globals.css`.
  **2026-08-02 — Hermes**: Find Friends page — `/find-friends` route with search users by username, suggested profiles section, follower/following lists with counts. `UserCard` component (avatar, name, username, bio, follow button). Data layer: `searchProfiles`, `fetchSuggestedProfiles`, `fetchFollowers`, `fetchFollowing` functions in `profiles.js`. Navbar updated with "Find Friends" link. 6 tests, 111/111 total green, build clean. Files: `src/pages/FindFriends.jsx`, `src/components/UserCard.jsx`, `src/components/FindFriends.test.jsx`, `src/lib/profiles.js`, `src/App.jsx`, `src/components/Navbar.jsx`, `src/styles/globals.css`.
+- **2026-08-02 — OpenClaude**: Fixed profile link — Navbar "View profile" now uses the real username from the `profiles` table (added `profile` to AuthContext on login). Files: `src/context/AuthContext.jsx`, `src/components/Navbar.jsx`.
 
 ## In progress
 
+- **OpenClaude (2026-08-02)**: Browse page slice — `/browse` route from the `stitch_export/code.html` design. Hero search + genre chips, search-results grid with "load more", genre bento grid with real book counts, "Your Shelves Are Bare" empty state. Navbar "Browse" links to `/browse`. Files: `src/pages/Browse.jsx` (new), `src/components/GenreBento.jsx` (new), `src/lib/openlibrary.js`, `src/App.jsx`, `src/components/Navbar.jsx`, `src/styles/globals.css`, `src/pages/Browse.test.jsx` (new).
 
 ## Up next
 
 - **Hermes**: library slice — user shelves (want_to_read / reading / finished), progress tracking, reading goals.
 - **OpenClaude**: "See all" index pages for genres/trending; or library UI slice.
-
-## In progress
-
-- **OpenClaude (2026-08-01)**: Fix profile link — Navbar "View profile" uses `user.email.split('@')[0]` instead of the real username from `profiles`. Fix: add `profile` (username) to AuthContext on login, update Navbar to use `profile.username`. Files: `src/context/AuthContext.jsx`, `src/components/Navbar.jsx`.
 
 ---
 
