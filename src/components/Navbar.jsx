@@ -7,6 +7,7 @@ const LINKS = [
   { label: 'Browse', href: '#trending' },
   { label: 'Library', href: '#features' },
   { label: 'Book Clubs', href: '#testimonials' },
+  { label: 'Find Friends', to: '/find-friends' },
 ]
 
 export default function Navbar() {
@@ -53,9 +54,15 @@ export default function Navbar() {
         </Link>
         <div className="nav-links">
           {LINKS.map((link) => (
-            <a key={link.label} className="nav-link" href={link.href}>
-              {link.label}
-            </a>
+            link.to ? (
+              <Link key={link.label} className="nav-link" to={link.to}>
+                {link.label}
+              </Link>
+            ) : (
+              <a key={link.label} className="nav-link" href={link.href}>
+                {link.label}
+              </a>
+            )
           ))}
         </div>
       </div>
@@ -118,14 +125,25 @@ export default function Navbar() {
       {menuOpen && (
         <div className="nav-menu-mobile">
           {LINKS.map((link) => (
-            <a
-              key={link.label}
-              className="nav-menu-mobile-link"
-              href={link.href}
-              onClick={() => setMenuOpen(false)}
-            >
-              {link.label}
-            </a>
+            link.to ? (
+              <Link
+                key={link.label}
+                className="nav-menu-mobile-link"
+                to={link.to}
+                onClick={() => setMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ) : (
+              <a
+                key={link.label}
+                className="nav-menu-mobile-link"
+                href={link.href}
+                onClick={() => setMenuOpen(false)}
+              >
+                {link.label}
+              </a>
+            )
           ))}
           {user ? (
             <>

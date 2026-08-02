@@ -99,3 +99,48 @@ export async function fetchShelfCounts(userId) {
   }
   return { counts, error: null }
 }
+
+// Search profiles by username (for Find Friends page).
+export async function searchProfiles(query, limit = 20) {
+  if (!query || !query.trim()) return { data: [], error: null }
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, username, display_name, avatar_url, bio')
+    .ilike('username', `%${query.trim()}%`)
+    .limit(limit)
+  return { data, error }
+}
+
+// Fetch suggested profiles (random users, excluding current user).
+export async function fetchSuggestedProfiles(currentUserId, limit = 10) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, username, display_name, avatar_url, bio')
+    .neq('id', currentUserId)
+    .limit(limit)
+  return { data, error }
+}
+
+// Fetch list of followers (with profile data).
+export async function fetchFollowers(userId, limit = 50) {
+  const { data, error } = await supabase
+    .from('user_follows')
+    .select('follower_id, profiles!user_follows_follower_id_fkey(id, username, display_name, avatar_url, bio)')
+    .eq('following_id', userId)
+    .limit(limit)
+  if (error) return { data: [], error }
+  const followers = data.map((row) => row.profiles).filter(Boolean)
+  return { data: followers, error: null }
+}
+
+// Fetch list of users this person is following (with profile data).
+export async function fetchFollowing(userId, limit = 50) {
+  const { data, error } = await supabase
+    .from('user_follows')
+    .select('following_id, profiles!user_follows_following_id_fkey(id, username, display_name, avatar_url, bio)')
+    .eq('follower_id', userId)
+    .limit(limit)
+  if (error) return { data: [], error }
+  const following = data.map((row) => row.profiles).filter(Boolean)
+  return { data: following, error: null }
+}
