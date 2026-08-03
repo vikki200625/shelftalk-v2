@@ -37,15 +37,24 @@ export default function GlobalChat() {
     e.preventDefault()
     if (!newMessage.trim() || !user) return
 
-    const { data, error } = await sendGlobalMessage(user.id, newMessage.trim())
-    if (error) {
-      setError(error.message || 'Failed to send message')
-      return
-    }
-    if (data) {
-      setMessages((prev) => [...prev, data])
-      setNewMessage('')
-      setError(null)
+    const text = newMessage.trim()
+    setNewMessage('')
+    setError(null)
+
+    try {
+      const { data, error } = await sendGlobalMessage(user.id, text)
+      if (error) {
+        setError(error.message || 'Failed to send message')
+        setNewMessage(text)
+        return
+      }
+      if (data) {
+        setMessages((prev) => [...prev, data])
+      }
+    } catch (err) {
+      console.error('Chat send error:', err)
+      setError('Failed to send message. Please try again.')
+      setNewMessage(text)
     }
   }
 

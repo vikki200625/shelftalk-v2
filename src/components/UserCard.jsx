@@ -21,9 +21,8 @@ export default function UserCard({ user, currentUserId, onFollowChange }) {
       </Link>
       {currentUserId && currentUserId !== user.id && (
         <FollowButton
-          currentUserId={currentUserId}
-          targetUserId={user.id}
-          onChange={onFollowChange}
+          profileId={user.id}
+          onFollowChange={onFollowChange}
         />
       )}
     </div>

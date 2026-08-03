@@ -8,7 +8,7 @@ import { followUser, unfollowUser, fetchFollowStatus } from '../lib/profiles'
  * Waits for DB response before updating UI (no optimistic updates).
  * Redirects to /signin when a visitor tries to follow.
  */
-export default function FollowButton({ profileId, following: initialFollowing }) {
+export default function FollowButton({ profileId, following: initialFollowing, onFollowChange }) {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [following, setFollowing] = useState(initialFollowing)
@@ -38,11 +38,13 @@ export default function FollowButton({ profileId, following: initialFollowing })
       const { error } = await unfollowUser(user.id, profileId)
       if (!error) {
         setFollowing(false)
+        onFollowChange?.()
       }
     } else {
       const { data, error } = await followUser(user.id, profileId)
       if (!error && data) {
         setFollowing(true)
+        onFollowChange?.()
       } else {
         console.error('Follow failed:', error)
       }

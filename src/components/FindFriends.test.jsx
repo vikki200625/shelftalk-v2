@@ -28,6 +28,9 @@ vi.mock('../lib/profiles', () => ({
   fetchSuggestedProfiles: (...args) => mockFetchSuggestedProfiles(...args),
   fetchFollowers: (...args) => mockFetchFollowers(...args),
   fetchFollowing: (...args) => mockFetchFollowing(...args),
+  fetchFollowStatus: vi.fn().mockResolvedValue({ following: false, error: null }),
+  followUser: vi.fn().mockResolvedValue({ data: { id: 'follow-1' }, error: null }),
+  unfollowUser: vi.fn().mockResolvedValue({ error: null }),
 }))
 
 describe('FindFriends page', () => {
