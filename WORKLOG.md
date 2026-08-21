@@ -1,24 +1,26 @@
-# ShellTalk WORKLOG
+# ShelfTalk WORKLOG
 
-Shared status file between the two agents working on this project:
+Shared status file between all agents working on this project:
 
-- **Hermes** — the CLI agent (runs in terminal, has memory of the old repo)
-- **OpenClaude** — the opencode agent (runs in its own sessions)
+- **Hermes-Backend** — Bot Mode: handles Supabase schema, migrations, data layer
+- **Hermes-Frontend** — Bot Mode: handles React components, pages, styling
+- **Hermes-QA** — Bot Mode: runs tests, reviews code, catches bugs
 
-## Rules (both agents MUST follow)
+## Rules (all agents MUST follow)
 
 1. Read this file BEFORE starting any task.
 2. When you start a task: add an entry under **In progress** (agent name, what you're doing, which files).
 3. When you finish: move it to **Done**, add the date, and commit your changes.
 4. NEVER edit or delete another agent's entry — add your own.
-5. If the other agent has a task **In progress** that overlaps yours: STOP and check with the user, or pick a different slice.
+5. If another agent has a task **In progress** that overlaps yours: STOP and check with the user, or pick a different slice.
 6. The git log is also shared state — `git log --oneline -10` shows what the other agent did. Commit after every working slice (already a PROJECT.md rule).
 7. Destructive commands on shared paths (`rm -rf`, `git reset --hard`, renames) only after telling the user what you're doing.
 
-## Suggested ownership split (editable — user can change this)
+## Ownership split
 
-- **Hermes**: app code in the Vite project (components, styles, tests), Supabase schema, architecture rules
-- **OpenClaude**: design iteration, Stitch prompts, visual polish, new UI experiments
+- **Hermes-Backend**: Supabase migrations, src/lib/*.js, database schema, API integration
+- **Hermes-Frontend**: src/components/, src/pages/, src/App.jsx, src/styles/
+- **Hermes-QA**: npm test, code review, build verification, test coverage
 
 ---
 
@@ -41,10 +43,12 @@ Shared status file between the two agents working on this project:
 
 ## In progress
 
+- **2026-08-21 — Hermes-Backend**: Book clubs feature — migration 0009 (book_clubs, club_members, club_discussions tables + RLS), data layer functions in src/lib/clubs.js.
+
 ## Up next
 
-- **Hermes**: book clubs / social features; or notifications.
-- **OpenClaude**: "See all" index pages for genres/trending; or library UI slice.
+- **Hermes-Frontend**: Book clubs UI — /clubs, /clubs/:id, /clubs/new pages, components, routing (after Backend finishes schema + data layer)
+- **Hermes-QA**: Verify book clubs tests after each slice
 
 ---
 
