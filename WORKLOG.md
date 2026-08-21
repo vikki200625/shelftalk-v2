@@ -42,9 +42,13 @@ Shared status file between all agents working on this project:
 - **2026-08-02 — OpenClaude**: Browse verification follow-up — per verifier findings: added `--brand-accent-soft` token (replaces the hardcoded rgba in the load-more hover), defined the `bento--forest/brass/sage` tone classes (were referenced but undefined — cards now show distinct accent bars), moved `aria-live` onto the results header so "load more" appends don't re-announce the whole grid. Independent verifier verdict: PASS. 124/124 green, build clean. Files: `src/styles/tokens.css`, `src/styles/globals.css`, `src/pages/Browse.jsx`.
 - **2026-08-21 — Hermes-Backend**: Book clubs migration 0009 — three tables (`book_clubs`, `club_members`, `club_discussions`) with full RLS. Clubs are publicly browsable, only signed-in users can create. Members join/leave with role tracking (owner/member). Discussions are member-only with author edit/delete. Matches the API contract in `src/lib/clubs.js`. 221/221 tests green, build clean. Files: `supabase/migrations/0009_book_clubs.sql`.
 
-## In progress
+## Done
 
-- **2026-08-21 — Hermes-Frontend**: Book clubs UI slice — /clubs (browse/search), /clubs/:id (detail, members, discussions, join/leave), /clubs/new (create form). Components: ClubCard, DiscussionCard, DiscussionForm. Data layer stub in src/lib/clubs.js (pending backend migration). Navbar "Book Clubs" now routes to /clubs. 9 tests, 221/221 total green, build clean. All colors from tokens.css. Files: `src/pages/Clubs.jsx`, `src/pages/ClubDetail.jsx`, `src/pages/CreateClub.jsx`, `src/components/ClubCard.jsx`, `src/components/DiscussionCard.jsx`, `src/components/DiscussionForm.jsx`, `src/lib/clubs.js`, `src/components/Clubs.test.jsx`, `src/App.jsx`, `src/components/Navbar.jsx`, `src/styles/globals.css`.
+- **2026-08-21 — Hermes-Backend**: Book clubs feature — migration 0009 (book_clubs, club_members, club_discussions tables + RLS). Applied via Supabase dashboard SQL editor. 221/221 green, build clean. Files: `supabase/migrations/0009_book_clubs.sql`.
+
+- **2026-08-21 — Hermes-Frontend**: Book clubs UI slice — /clubs (browse/search), /clubs/:id (detail, members, discussions, join/leave), /clubs/new (create form). Components: ClubCard, DiscussionCard, DiscussionForm. Data layer in src/lib/clubs.js wired to real Supabase queries (matches migration 0009 schema). Navbar "Book Clubs" now routes to /clubs. 9 tests, 221/221 total green, build clean. All colors from tokens.css. Files: `src/pages/Clubs.jsx`, `src/pages/ClubDetail.jsx`, `src/pages/CreateClub.jsx`, `src/components/ClubCard.jsx`, `src/components/DiscussionCard.jsx`, `src/components/DiscussionForm.jsx`, `src/lib/clubs.js`, `src/components/Clubs.test.jsx`, `src/App.jsx`, `src/components/Navbar.jsx`, `src/styles/globals.css`.
+
+## In progress
 
 ## Up next
 
