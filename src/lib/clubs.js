@@ -1,8 +1,6 @@
 /* ------------------------------------------------------------------
    clubs.js — Book clubs data layer.
-   @hermes-backend will replace these stubs once migration 0009 lands.
-   API contract is locked: these function signatures are the frontend's
-   expected interface.
+   Depends on migration 0009 (book_clubs, club_members, club_discussions).
    ------------------------------------------------------------------ */
 
 import supabase from "./supabase";
