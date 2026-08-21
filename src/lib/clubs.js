@@ -4,6 +4,7 @@
    ------------------------------------------------------------------ */
 
 import supabase from "./supabase";
+import { createNotification } from "./notifications";
 
 /**
  * Get all clubs, optionally filtered by search term.
@@ -162,5 +163,32 @@ export async function createDiscussion(clubId, { title, body }) {
     .single()
 
   if (error) throw error
+
+  // Notify every other member of the club. Best-effort: a notification
+  // failure must not fail the discussion post.
+  try {
+    const [{ data: club }, { data: author }, { data: members }] = await Promise.all([
+      supabase.from('book_clubs').select('name').eq('id', clubId).maybeSingle(),
+      supabase.from('profiles').select('username').eq('id', user.id).maybeSingle(),
+      supabase.from('club_members').select('user_id').eq('club_id', clubId),
+    ])
+
+    const recipients = (members || []).map(m => m.user_id).filter(id => id !== user.id)
+    if (recipients.length > 0) {
+      const message = `${author?.username || 'Someone'} posted in ${club?.name || 'a club'}: ${title}`
+      await supabase.from('notifications').insert(
+        recipients.map(userId => ({
+          user_id: userId,
+          type: 'club_discussion',
+          actor_id: user.id,
+          club_id: clubId,
+          message,
+        }))
+      )
+    }
+  } catch {
+    // swallow — see comment above
+  }
+
   return data
 }

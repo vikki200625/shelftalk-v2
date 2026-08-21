@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router'
 import { useAuth } from '../context/AuthContext'
 import Avatar from './Avatar'
+import NotificationBell from './NotificationBell'
 
 const LINKS = [
   { label: 'Browse', to: '/browse' },
@@ -68,6 +69,7 @@ export default function Navbar() {
           ))}
         </div>
       </div>
+      {user && <NotificationBell />}
       <div className="nav-right">
         {user ? (
           <div className="nav-profile" ref={profileRef}>
@@ -149,6 +151,7 @@ export default function Navbar() {
           ))}
           {user ? (
             <>
+              <NotificationBell />
               <Link
                 className="nav-menu-mobile-link"
                 onClick={() => setMenuOpen(false)}

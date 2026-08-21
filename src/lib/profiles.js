@@ -1,4 +1,5 @@
 import supabase from './supabase'
+import { createNotification } from './notifications'
 
 /**
  * Profile data layer — reads/writes profiles + follows.
@@ -67,13 +68,30 @@ export async function fetchFollowStatus(followerId, followingId) {
 }
 
 // Follow a user (RLS: auth.uid() must equal follower_id).
+// Also notifies the person being followed (never on self-follow).
 export async function followUser(followerId, followingId) {
   const { data, error } = await supabase
     .from('user_follows')
     .insert({ follower_id: followerId, following_id: followingId })
     .select()
     .single()
-  return { data, error }
+  if (error) return { data, error }
+
+  if (followerId !== followingId) {
+    const { data: actor } = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('id', followerId)
+      .maybeSingle()
+    // Notification failure shouldn't fail the follow itself.
+    await createNotification({
+      userId: followingId,
+      type: 'follow',
+      actorId: followerId,
+      message: `${actor?.username || 'Someone'} started following you`,
+    })
+  }
+  return { data, error: null }
 }
 
 // Unfollow a user (RLS: auth.uid() must equal follower_id).
