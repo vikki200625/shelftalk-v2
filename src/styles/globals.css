@@ -2342,6 +2342,125 @@ button {
   color: var(--brand-primary-hover);
 }
 
+/* ---------- book ratings & reviews ---------- */
+.ratings {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--brand-outline);
+}
+
+.ratings-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.ratings-average {
+  font-family: var(--font-serif);
+  font-size: var(--text-headline-hero);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.ratings-stars {
+  display: flex;
+  gap: var(--space-xxs);
+}
+
+.star {
+  color: var(--ink-muted);
+  font-size: var(--text-body-lg);
+}
+
+.star-filled {
+  color: #f59e0b; /* amber — the one sanctioned warm color (rating convention) */
+}
+
+.ratings-stars-input .star-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.15s, color 0.15s;
+}
+
+.ratings-stars-input .star-btn:hover:not(:disabled) {
+  transform: scale(1.2);
+}
+
+.ratings-stars-input .star-btn:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs, 4px);
+}
+
+.ratings-stars-input .star-btn:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.ratings-count {
+  font-size: var(--text-label);
+  color: var(--ink-muted);
+}
+
+.ratings-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  max-width: 720px;
+}
+
+.ratings-optional {
+  font-weight: 400;
+  color: var(--ink-muted);
+}
+
+.ratings-char-count {
+  align-self: flex-end;
+  font-size: var(--text-caption);
+  color: var(--ink-muted);
+}
+
+.ratings-saved {
+  font-size: var(--text-caption);
+  color: var(--brand-sage-text);
+}
+
+.ratings-delete {
+  background: none;
+  border: none;
+  font-size: var(--text-label);
+  color: var(--ink-muted);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.ratings-delete:hover {
+  color: var(--ink);
+}
+
+.ratings-delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ratings-list {
+  margin-top: var(--space-lg);
+  margin-bottom: 0;
+}
+
+.ratings-list-stars {
+  font-size: var(--text-label);
+  letter-spacing: 1px;
+  color: #f59e0b; /* same amber as above */
+}
+
+.ratings-list-empty {
+  color: var(--ink-muted);
+}
+
 /* ---------- find friends page ---------- */
 .find-friends-page {
   max-width: 800px;

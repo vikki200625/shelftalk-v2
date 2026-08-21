@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useParams } from 'react-router'
 import { fetchWork } from '../lib/openlibrary'
 import BookCover from './BookCover'
 import CommentSection from './CommentSection'
+import StarRating from './StarRating'
 
 /**
  * BookDetail — the /book/:key page. The header renders instantly from
@@ -87,6 +88,7 @@ export default function BookDetail() {
       )}
 
       <CommentSection bookKey={key} />
+      <StarRating bookKey={key} />
     </article>
   )
 }
