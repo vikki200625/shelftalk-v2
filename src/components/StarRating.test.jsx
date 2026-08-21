@@ -198,4 +198,32 @@ describe('StarRating — signed in', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(/rls blocked/)
     expect(screen.queryByText('Saved!')).not.toBeInTheDocument()
   })
+
+  it('pre-fills rating when the session restores after mount (hard refresh)', async () => {
+    // Reproduces the auth hydration race: AuthContext starts with
+    // user=null and restores the session asynchronously. The component
+    // must re-fetch the user's rating once the session arrives.
+    useAuth.mockReturnValue(SIGNED_OUT)
+    const { rerender } = renderStars()
+    await screen.findByText(/to rate and review/i)
+    expect(getUserRating).not.toHaveBeenCalled()
+
+    useAuth.mockReturnValue(SIGNED_IN)
+    getUserRating.mockResolvedValue({
+      id: 'mine',
+      rating: 4,
+      review_text: 'Restored review',
+    })
+    rerender(
+      <MemoryRouter>
+        <StarRating bookKey="OL45804W" />
+      </MemoryRouter>
+    )
+
+    expect(await screen.findByRole('radio', { checked: true })).toHaveAttribute(
+      'aria-label',
+      'Rate 4 stars'
+    )
+    expect(screen.getByLabelText(/your review/i)).toHaveValue('Restored review')
+  })
 })

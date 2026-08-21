@@ -64,8 +64,9 @@ export default function StarRating({ bookKey }) {
     return () => {
       cancelled = true
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bookKey, attempt])
+    // user?.id (not user) keeps this stable across renders, but re-runs
+    // once AuthContext finishes restoring the session after a hard refresh.
+  }, [bookKey, attempt, user?.id])
 
   async function handleRate(value) {
     if (!user || submitting) return
