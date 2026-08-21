@@ -3457,3 +3457,562 @@ button {
   color: var(--ink-muted);
   margin-top: var(--space-sm);
 }
+
+/* =================================================================
+   BOOK CLUBS
+   ================================================================= */
+
+/* --- Clubs list page --- */
+.clubs-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.clubs-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.clubs-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-headline-section);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  color: var(--ink);
+}
+
+.clubs-subtitle {
+  font-size: var(--text-body-lg);
+  color: var(--ink-muted);
+  margin-top: var(--space-xs);
+}
+
+.clubs-create-btn {
+  flex-shrink: 0;
+  background: var(--brand-primary);
+  color: var(--brand-surface);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-surface);
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.clubs-create-btn:hover {
+  background: var(--brand-primary-hover);
+  box-shadow: var(--shadow-hover);
+}
+
+.clubs-search {
+  margin-bottom: var(--space-lg);
+}
+
+.clubs-search-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  background: var(--brand-surface);
+  border: 1px solid var(--brand-outline);
+  border-radius: var(--radius-full);
+  font-size: var(--text-body-md);
+  color: var(--ink);
+  box-shadow: var(--shadow-surface);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.clubs-search-input::placeholder {
+  color: var(--placeholder);
+}
+
+.clubs-search-input:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: var(--ring-focus);
+}
+
+.clubs-error {
+  color: var(--error-text);
+  font-size: var(--text-caption);
+  margin-bottom: var(--space-md);
+}
+
+.clubs-loading {
+  text-align: center;
+  padding: var(--space-xl) 0;
+  color: var(--ink-muted);
+  font-size: var(--text-body-md);
+}
+
+.clubs-empty {
+  text-align: center;
+  padding: var(--space-xxl) var(--space-md);
+}
+
+.clubs-empty-text {
+  font-size: var(--text-body-lg);
+  color: var(--ink-muted);
+  margin-bottom: var(--space-md);
+}
+
+.clubs-empty-cta {
+  display: inline-block;
+  background: var(--brand-primary);
+  color: var(--brand-surface);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  padding: 10px 24px;
+  border-radius: var(--radius-full);
+  transition: background-color 0.2s;
+}
+
+.clubs-empty-cta:hover {
+  background: var(--brand-primary-hover);
+}
+
+/* --- Club card grid --- */
+.clubs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-md);
+}
+
+.club-card {
+  display: flex;
+  background: var(--brand-surface);
+  border: 1px solid var(--brand-outline);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-surface);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.club-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+.club-card-accent {
+  width: 6px;
+  flex-shrink: 0;
+  background: var(--club-accent, var(--brand-primary));
+}
+
+.club-card-body {
+  padding: var(--space-md);
+  flex: 1;
+  min-width: 0;
+}
+
+.club-card-name {
+  font-family: var(--font-serif);
+  font-size: var(--text-headline-card);
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: var(--space-xs);
+  line-height: var(--leading-snug);
+}
+
+.club-card-genre {
+  display: inline-block;
+  font-size: var(--text-label);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  color: var(--brand-accent-deep);
+  background: var(--brand-cream-soft);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-xs);
+}
+
+.club-card-desc {
+  font-size: var(--text-caption);
+  color: var(--ink-muted);
+  line-height: var(--leading-normal);
+  margin-bottom: var(--space-sm);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.club-card-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-label);
+  color: var(--ink-muted);
+}
+
+/* --- Club detail page --- */
+.club-detail {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.club-detail-back {
+  display: inline-block;
+  font-size: var(--text-caption);
+  font-weight: 700;
+  color: var(--brand-primary);
+  margin-bottom: var(--space-md);
+  transition: color 0.2s;
+}
+
+.club-detail-back:hover {
+  color: var(--brand-primary-hover);
+}
+
+.club-detail-header {
+  margin-bottom: var(--space-lg);
+}
+
+.club-detail-name {
+  font-family: var(--font-serif);
+  font-size: var(--text-headline-section);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  color: var(--ink);
+  margin-bottom: var(--space-xs);
+}
+
+.club-detail-genre {
+  display: inline-block;
+  font-size: var(--text-label);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  color: var(--brand-accent-deep);
+  background: var(--brand-cream-soft);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-sm);
+}
+
+.club-detail-desc {
+  font-size: var(--text-body-md);
+  color: var(--ink-muted);
+  line-height: var(--leading-normal);
+  margin-bottom: var(--space-sm);
+}
+
+.club-detail-meta {
+  display: flex;
+  gap: var(--space-md);
+  font-size: var(--text-caption);
+  color: var(--ink-muted);
+}
+
+.club-detail-actions {
+  margin-bottom: var(--space-lg);
+}
+
+.club-action-btn {
+  font-size: var(--text-caption);
+  font-weight: 700;
+  padding: 10px 24px;
+  border-radius: var(--radius-full);
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.club-action-btn--join {
+  background: var(--brand-primary);
+  color: var(--brand-surface);
+}
+
+.club-action-btn--join:hover {
+  background: var(--brand-primary-hover);
+  box-shadow: var(--shadow-hover);
+}
+
+.club-action-btn--leave {
+  background: var(--brand-outline);
+  color: var(--ink-muted);
+}
+
+.club-action-btn--leave:hover {
+  background: var(--error-text);
+  color: var(--brand-surface);
+}
+
+.club-detail-signin {
+  font-size: var(--text-body-md);
+  color: var(--ink-muted);
+  margin-bottom: var(--space-lg);
+}
+
+.club-detail-signin a {
+  color: var(--brand-primary);
+  font-weight: 700;
+}
+
+/* --- Members section --- */
+.club-section-heading {
+  font-family: var(--font-serif);
+  font-size: var(--text-headline-card);
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: var(--space-sm);
+}
+
+.club-members {
+  margin-bottom: var(--space-xl);
+}
+
+.club-members-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.club-member {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--brand-surface);
+  border: 1px solid var(--brand-outline);
+  border-radius: var(--radius-full);
+  font-size: var(--text-caption);
+  color: var(--ink);
+  transition: border-color 0.2s;
+}
+
+.club-member:hover {
+  border-color: var(--brand-primary);
+}
+
+.club-member-role {
+  font-size: var(--text-label);
+  font-weight: 700;
+  color: var(--brand-accent-deep);
+  text-transform: capitalize;
+}
+
+/* --- Discussions section --- */
+.club-discussions {
+  margin-bottom: var(--space-xl);
+}
+
+.club-discussions-empty {
+  font-size: var(--text-body-md);
+  color: var(--ink-muted);
+  padding: var(--space-lg) 0;
+}
+
+.club-discussions-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.discussion-card {
+  background: var(--brand-surface);
+  border: 1px solid var(--brand-outline);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-surface);
+}
+
+.discussion-card-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-headline-card);
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: var(--space-xs);
+}
+
+.discussion-card-body {
+  font-size: var(--text-body-md);
+  color: var(--ink-muted);
+  line-height: var(--leading-normal);
+  margin-bottom: var(--space-sm);
+}
+
+.discussion-card-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-label);
+  color: var(--ink-muted);
+}
+
+.discussion-card-author {
+  font-weight: 700;
+  color: var(--brand-primary);
+}
+
+.discussion-card-author:hover {
+  color: var(--brand-primary-hover);
+}
+
+/* --- Discussion form --- */
+.discussion-form {
+  background: var(--brand-surface);
+  border: 1px solid var(--brand-outline);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  box-shadow: var(--shadow-surface);
+}
+
+.discussion-form-heading {
+  font-family: var(--font-serif);
+  font-size: var(--text-headline-card);
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: var(--space-sm);
+}
+
+.discussion-form-error {
+  color: var(--error-text);
+  font-size: var(--text-caption);
+  margin-bottom: var(--space-sm);
+}
+
+.discussion-form-input,
+.discussion-form-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--brand-bg);
+  border: 1px solid var(--brand-outline);
+  border-radius: var(--radius-md);
+  font-size: var(--text-body-md);
+  color: var(--ink);
+  margin-bottom: var(--space-sm);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.discussion-form-input::placeholder,
+.discussion-form-textarea::placeholder {
+  color: var(--placeholder);
+}
+
+.discussion-form-input:focus,
+.discussion-form-textarea:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: var(--ring-focus);
+}
+
+.discussion-form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.discussion-form-submit {
+  background: var(--brand-primary);
+  color: var(--brand-surface);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  transition: background-color 0.2s;
+}
+
+.discussion-form-submit:hover:not(:disabled) {
+  background: var(--brand-primary-hover);
+}
+
+.discussion-form-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* --- Create club form --- */
+.create-club-form {
+  background: var(--brand-surface);
+  border: 1px solid var(--brand-outline);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-surface);
+  max-width: 560px;
+}
+
+.create-club-label {
+  display: block;
+  font-size: var(--text-caption);
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: var(--space-md);
+}
+
+.create-club-input,
+.create-club-textarea,
+.create-club-select {
+  display: block;
+  width: 100%;
+  margin-top: var(--space-xs);
+  padding: 10px 14px;
+  background: var(--brand-bg);
+  border: 1px solid var(--brand-outline);
+  border-radius: var(--radius-md);
+  font-size: var(--text-body-md);
+  color: var(--ink);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.create-club-input::placeholder,
+.create-club-textarea::placeholder {
+  color: var(--placeholder);
+}
+
+.create-club-input:focus,
+.create-club-textarea:focus,
+.create-club-select:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: var(--ring-focus);
+}
+
+.create-club-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.create-club-select {
+  appearance: auto;
+}
+
+.create-club-submit {
+  display: block;
+  width: 100%;
+  background: var(--brand-primary);
+  color: var(--brand-surface);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: var(--radius-full);
+  transition: background-color 0.2s;
+  margin-top: var(--space-sm);
+}
+
+.create-club-submit:hover:not(:disabled) {
+  background: var(--brand-primary-hover);
+}
+
+.create-club-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* --- Responsive --- */
+@media (min-width: 640px) {
+  .nav-links {
+    display: flex;
+  }
+
+  .nav-signin {
+    display: block;
+  }
+}
+
+@media (max-width: 639px) {
+  .clubs-header {
+    flex-direction: column;
+  }
+
+  .clubs-grid {
+    grid-template-columns: 1fr;
+  }
+}

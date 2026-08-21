@@ -16,6 +16,9 @@ import Library from './pages/Library'
 import GlobalChat from './pages/GlobalChat'
 import PrivateChat from './pages/PrivateChat'
 import Browse from './pages/Browse'
+import Clubs from './pages/Clubs'
+import ClubDetail from './pages/ClubDetail'
+import CreateClub from './pages/CreateClub'
 
 export default function App() {
   return (
@@ -26,6 +29,9 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/browse" element={<Browse />} />
+          <Route path="/clubs" element={<Clubs />} />
+          <Route path="/clubs/new" element={<CreateClub />} />
+          <Route path="/clubs/:id" element={<ClubDetail />} />
           <Route path="/book/:key" element={<BookDetail />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />

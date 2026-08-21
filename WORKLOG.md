@@ -44,10 +44,10 @@ Shared status file between all agents working on this project:
 ## In progress
 
 - **2026-08-21 — Hermes-Backend**: Book clubs feature — migration 0009 (book_clubs, club_members, club_discussions tables + RLS), data layer functions in src/lib/clubs.js.
+- **2026-08-21 — Hermes-Frontend**: Book clubs UI slice — /clubs (browse/search), /clubs/:id (detail, members, discussions, join/leave), /clubs/new (create form). Components: ClubCard, DiscussionCard, DiscussionForm. Data layer stub in src/lib/clubs.js (pending backend migration). Navbar "Book Clubs" now routes to /clubs. 9 tests, 221/221 total green, build clean. All colors from tokens.css. Files: `src/pages/Clubs.jsx`, `src/pages/ClubDetail.jsx`, `src/pages/CreateClub.jsx`, `src/components/ClubCard.jsx`, `src/components/DiscussionCard.jsx`, `src/components/DiscussionForm.jsx`, `src/lib/clubs.js`, `src/components/Clubs.test.jsx`, `src/App.jsx`, `src/components/Navbar.jsx`, `src/styles/globals.css`.
 
 ## Up next
 
-- **Hermes-Frontend**: Book clubs UI — /clubs, /clubs/:id, /clubs/new pages, components, routing (after Backend finishes schema + data layer)
 - **Hermes-QA**: Verify book clubs tests after each slice
 
 ---

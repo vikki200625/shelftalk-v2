@@ -6,7 +6,7 @@ import Avatar from './Avatar'
 const LINKS = [
   { label: 'Browse', to: '/browse' },
   { label: 'Library', to: '/library' },
-  { label: 'Book Clubs', href: '#testimonials' },
+  { label: 'Book Clubs', to: '/clubs' },
   { label: 'Find Friends', to: '/find-friends' },
   { label: 'Chat', to: '/chat' },
   { label: 'Messages', to: '/messages' },
