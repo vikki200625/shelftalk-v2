@@ -78,18 +78,22 @@ export async function followUser(followerId, followingId) {
   if (error) return { data, error }
 
   if (followerId !== followingId) {
-    const { data: actor } = await supabase
-      .from('profiles')
-      .select('username')
-      .eq('id', followerId)
-      .maybeSingle()
-    // Notification failure shouldn't fail the follow itself.
-    await createNotification({
-      userId: followingId,
-      type: 'follow',
-      actorId: followerId,
-      message: `${actor?.username || 'Someone'} started following you`,
-    })
+    // Best-effort: notification failure should never fail the follow.
+    try {
+      const { data: actor } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('id', followerId)
+        .maybeSingle()
+      await createNotification({
+        userId: followingId,
+        type: 'follow',
+        actorId: followerId,
+        message: `${actor?.username || 'Someone'} started following you`,
+      })
+    } catch {
+      // swallow — see comment above
+    }
   }
   return { data, error: null }
 }

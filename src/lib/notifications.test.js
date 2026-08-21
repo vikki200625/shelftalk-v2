@@ -189,7 +189,11 @@ describe('subscribeNotifications', () => {
     const callback = vi.fn()
     const returned = subscribeNotifications(USER_ID, callback)
 
-    expect(supabaseMock.channel).toHaveBeenCalledWith(`notifications:${USER_ID}`)
+    // Channel name is unique per subscription (random suffix) but always
+    // namespaced with the user id — supabase-js dedupes by name, and two
+    // mounted bells (desktop + mobile) each need their own channel.
+    const [name] = supabaseMock.channel.mock.calls[0]
+    expect(name).toMatch(new RegExp(`^notifications:${USER_ID}:`))
     expect(returned).toBe(channel)
 
     // .on('postgres_changes', config, handler) — verify filter + fire handler
@@ -201,5 +205,15 @@ describe('subscribeNotifications', () => {
 
     handler({ new: { id: 'n10', message: 'fresh' } })
     expect(callback).toHaveBeenCalledWith({ id: 'n10', message: 'fresh' })
+  })
+
+  it('generates a distinct channel name per subscription', () => {
+    supabaseMock.channel.mockImplementation(() => fakeChannel())
+
+    subscribeNotifications(USER_ID, vi.fn())
+    subscribeNotifications(USER_ID, vi.fn())
+
+    const names = supabaseMock.channel.mock.calls.map(([n]) => n)
+    expect(new Set(names).size).toBe(2)
   })
 })

@@ -84,10 +84,14 @@ export async function markAllRead(userId) {
 /**
  * Subscribe to realtime INSERTs on the user's notifications.
  * Returns the channel — call supabase.removeChannel(channel) to stop.
+ * Channel names include a random suffix: supabase-js dedupes channels
+ * by name, and two mounted bell instances (desktop + mobile menu) each
+ * unsubscribe on unmount — a shared name would let one teardown kill
+ * the other instance's feed.
  */
 export function subscribeNotifications(userId, callback) {
   return supabase
-    .channel(`notifications:${userId}`)
+    .channel(`notifications:${userId}:${Math.random().toString(36).slice(2)}`)
     .on(
       'postgres_changes',
       {

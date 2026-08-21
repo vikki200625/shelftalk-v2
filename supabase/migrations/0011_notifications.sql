@@ -30,11 +30,19 @@ DROP POLICY IF EXISTS "notifications_select_own" ON public.notifications;
 CREATE POLICY "notifications_select_own" ON public.notifications
   FOR SELECT TO authenticated USING (auth.uid() = user_id);
 
--- Signed-in users create notifications as themselves.
+-- Signed-in users can insert a notification either for themselves OR
+-- as themselves (actor_id = auth.uid()) for someone else. The first
+-- arm covers direct inserts; the second is what makes cross-user
+-- notifications possible at all: a follow or club-discussion
+-- notification has user_id = recipient != auth.uid(), so a plain
+-- "own rows only" CHECK would reject every such insert. Requiring
+-- actor_id = auth.uid() keeps attribution honest — you can only
+-- notify as yourself, never impersonate another actor.
 -- (The app layer is responsible for not notifying the actor.)
 DROP POLICY IF EXISTS "notifications_insert_own" ON public.notifications;
 CREATE POLICY "notifications_insert_own" ON public.notifications
-  FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+  FOR INSERT TO authenticated
+  WITH CHECK ((auth.uid() = user_id) OR (auth.uid() = actor_id));
 
 -- Users can mark their own notifications as read (and edit nothing else
 -- of consequence — UPDATE is scoped to own rows).
