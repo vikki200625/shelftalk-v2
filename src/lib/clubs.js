@@ -5,7 +5,7 @@
    expected interface.
    ------------------------------------------------------------------ */
 
-import { supabase } from './supabase'
+import supabase from "./supabase";
 
 /**
  * Get all clubs, optionally filtered by search term.
