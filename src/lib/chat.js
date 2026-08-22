@@ -44,48 +44,19 @@ export function subscribeGlobalMessages(callback) {
 // ==================== PRIVATE CHAT ====================
 
 // Get or create a private chat channel between two users.
+// Uses the SECURITY DEFINER rpc (applied live 2026-08-22): client-side
+// creation cannot work under correct RLS — the creator is not allowed to
+// insert the OTHER user's participant row. The rpc reuses an existing
+// channel for the pair or creates one atomically. userId1 is implicit
+// (auth.uid() inside the function); it stays in the signature because
+// callers pass both ids.
 export async function getOrCreateChannel(userId1, userId2) {
-  // Check if a channel already exists between these two users
-  const { data: existingChannels } = await supabase
-    .from('chat_participants')
-    .select('channel_id')
-    .eq('user_id', userId1)
+  const { data: channelId, error } = await supabase.rpc('create_dm_channel', {
+    other_user: userId2,
+  })
 
-  if (existingChannels && existingChannels.length > 0) {
-    for (const { channel_id } of existingChannels) {
-      const { data: otherParticipant } = await supabase
-        .from('chat_participants')
-        .select('user_id')
-        .eq('channel_id', channel_id)
-        .neq('user_id', userId1)
-        .single()
-
-      if (otherParticipant && otherParticipant.user_id === userId2) {
-        return { channelId: channel_id, error: null }
-      }
-    }
-  }
-
-  // Create new channel
-  const { data: channel, error: channelError } = await supabase
-    .from('chat_channels')
-    .insert({})
-    .select()
-    .single()
-
-  if (channelError) return { channelId: null, error: channelError }
-
-  // Add both participants
-  const { error: partError } = await supabase
-    .from('chat_participants')
-    .insert([
-      { channel_id: channel.id, user_id: userId1 },
-      { channel_id: channel.id, user_id: userId2 },
-    ])
-
-  if (partError) return { channelId: null, error: partError }
-
-  return { channelId: channel.id, error: null }
+  if (error) return { channelId: null, error }
+  return { channelId, error: null }
 }
 
 // Get all channels for a user (with last message preview).
