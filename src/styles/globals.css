@@ -193,6 +193,42 @@ button {
   background: var(--brand-sage);
 }
 
+.nav-link--active {
+  color: var(--brand-primary);
+  background: var(--brand-sage);
+}
+
+/* ---- accessibility sweep (design review 2026-09-29, finding 6B) ---- */
+
+/* Keyboard focus must stay visible where the default outline is removed. */
+.search-input:focus-visible,
+.auth-input:focus-visible,
+.comments-textarea:focus-visible,
+.find-friends-search-input:focus-visible,
+.newsletter-input:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+/* Skip link: hidden until keyboard focus, then pinned top-left. */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--brand-primary);
+  color: var(--brand-surface);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: var(--text-caption);
+  padding: 10px 16px;
+  border-radius: 0 0 var(--radius-sm) 0;
+}
+
+.skip-link:focus {
+  left: 0;
+}
+
 .nav-right {
   display: flex;
   align-items: center;
@@ -235,8 +271,8 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-md);
   color: var(--brand-primary);
   transition: background-color 0.2s;
@@ -267,6 +303,10 @@ button {
   padding: var(--space-sm) 0;
   border-bottom: 1px solid var(--border-faint);
   transition: color 0.2s;
+}
+
+.nav-menu-mobile-link--active {
+  color: var(--brand-primary);
 }
 
 .nav-menu-mobile-link:hover {
@@ -694,7 +734,8 @@ button {
 .trend-rating {
   font-size: var(--text-label);
   font-weight: 700;
-  color: var(--brand-accent);
+  /* deep brass: passes WCAG AA (4.5:1) on cream — plain brass fails at 12px */
+  color: var(--brand-accent-deep);
   margin-top: 4px;
 }
 
@@ -1386,7 +1427,7 @@ button {
   }
 
   .footer-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: 1fr 1fr;
   }
 
   .footer-bottom {
@@ -1536,6 +1577,80 @@ button {
   font-weight: 700;
   padding: 4px 12px;
   border-radius: var(--radius-full);
+}
+
+/* ---------- shelf selector (book detail) ---------- */
+.shelf-save {
+  margin-top: var(--space-sm);
+}
+
+.shelf-save-label {
+  font-size: var(--text-caption);
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: var(--space-xs);
+}
+
+.shelf-save-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.shelf-save-btn {
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  color: var(--brand-primary);
+  background: var(--brand-surface);
+  border: 1px solid var(--brand-outline);
+  border-radius: var(--radius-full);
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.shelf-save-btn:hover:not(:disabled) {
+  background: var(--brand-sage);
+}
+
+.shelf-save-btn--active {
+  background: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: var(--brand-surface);
+}
+
+.shelf-save-btn--active:hover:not(:disabled) {
+  background: var(--brand-primary-hover);
+  border-color: var(--brand-primary-hover);
+}
+
+.shelf-save-btn:disabled,
+.shelf-save-remove:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.shelf-save-remove {
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  color: var(--ink-muted);
+  background: none;
+  border: none;
+  padding: 8px 4px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.shelf-save-remove:hover:not(:disabled) {
+  color: var(--ink);
+}
+
+.shelf-save-loading {
+  font-size: var(--text-caption);
+  color: var(--ink-muted);
 }
 
 .detail-description {
@@ -2110,6 +2225,39 @@ div.nav-bell-item {
 
 .profile-actions {
   margin-top: var(--space-sm);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+/* Secondary pill beside Follow — opens the DM thread. */
+.profile-message-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  padding: 0 var(--space-lg);
+  background: var(--brand-surface);
+  color: var(--brand-primary);
+  border: 1px solid var(--brand-primary);
+  border-radius: var(--radius-full);
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.profile-message-btn:hover:not(:disabled) {
+  background: var(--brand-sage);
+  transform: translateY(-1px);
+}
+
+.profile-message-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
 }
 
 /* ---------- follow button ---------- */
@@ -2831,6 +2979,17 @@ div.nav-bell-item {
   padding: var(--space-xxl);
 }
 
+.library-error {
+  text-align: center;
+  padding: var(--space-xl);
+}
+
+.library-error-text {
+  color: var(--ink-muted);
+  font-size: var(--text-body-md);
+  margin-bottom: var(--space-sm);
+}
+
 .library-empty {
   text-align: center;
   padding: var(--space-xxl);
@@ -3306,6 +3465,17 @@ div.nav-bell-item {
   color: #c0392b;
   padding: 0 var(--space-md);
   text-align: center;
+}
+
+.chat-error-state {
+  text-align: center;
+  padding: var(--space-xl) var(--space-md);
+}
+
+.chat-error-state p {
+  color: var(--ink-muted);
+  font-size: var(--text-body-md);
+  margin-bottom: var(--space-sm);
 }
 
 .chat-send-btn {
@@ -4298,6 +4468,17 @@ div.nav-bell-item {
 }
 
 @media (max-width: 639px) {
+  /* footer columns stack — 4-across grid caused 124px horizontal
+     overflow at 375px (design review 2026-09-29, finding 6A) */
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* decorative hero book stack pokes past the viewport on phones */
+  .books-visual {
+    display: none;
+  }
+
   .clubs-header {
     flex-direction: column;
   }

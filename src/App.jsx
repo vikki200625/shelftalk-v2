@@ -24,8 +24,11 @@ export default function App() {
   return (
     <AuthProvider>
       <ScrollToTop />
+      <a className="skip-link" href="#main-content">
+        Skip to content
+      </a>
       <Navbar />
-      <main className="page-main">
+      <main className="page-main" id="main-content">
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/browse" element={<Browse />} />

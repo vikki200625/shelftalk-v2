@@ -5,14 +5,22 @@ Element.prototype.scrollIntoView = vi.fn()
 
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router'
+import { MemoryRouter, Routes, Route } from 'react-router'
 import GlobalChat from '../pages/GlobalChat'
+import PrivateChat from '../pages/PrivateChat'
+import {
+  getGlobalMessages,
+  getUserChannels,
+  sendPrivateMessage,
+} from '../lib/chat'
 
-// Mock auth context
+// Mock auth context — stable user ref so effects keyed on `user`
+// don't re-fire on every render (matches the real AuthContext).
+const { testUser } = vi.hoisted(() => ({
+  testUser: { id: 'user-1', email: 'test@example.com' },
+}))
 vi.mock('../context/AuthContext', () => ({
-  useAuth: () => ({
-    user: { id: 'user-1', email: 'test@example.com' },
-  }),
+  useAuth: () => ({ user: testUser }),
 }))
 
 // Mock chat API
@@ -73,5 +81,113 @@ describe('GlobalChat page', () => {
     await user.click(screen.getByText('Send'))
 
     expect(input).toHaveValue('')
+  })
+})
+
+describe('GlobalChat error states', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    getGlobalMessages.mockResolvedValue({ data: [], error: null })
+  })
+
+  it('shows a load error with retry instead of a lying empty state', async () => {
+    const user = userEvent.setup()
+    getGlobalMessages.mockResolvedValueOnce({ data: [], error: { message: 'boom' } })
+    render(
+      <MemoryRouter>
+        <GlobalChat />
+      </MemoryRouter>
+    )
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent(/couldn't load messages/i)
+    expect(screen.queryByText(/no messages yet/i)).toBeNull()
+
+    getGlobalMessages.mockResolvedValueOnce({ data: [], error: null })
+    await user.click(screen.getByText('Try again'))
+    await waitFor(() => {
+      expect(screen.getByText(/no messages yet/i)).toBeInTheDocument()
+    })
+  })
+
+  it("renders the sender's real username instead of a generic label", async () => {
+    getGlobalMessages.mockResolvedValueOnce({
+      data: [
+        {
+          id: 'm1',
+          user_id: 'someone-else',
+          message: 'hello there',
+          created_at: new Date().toISOString(),
+          profiles: { username: 'king' },
+        },
+      ],
+      error: null,
+    })
+    render(
+      <MemoryRouter>
+        <GlobalChat />
+      </MemoryRouter>
+    )
+
+    expect(await screen.findByText('king')).toBeInTheDocument()
+    expect(screen.getByText('hello there')).toBeInTheDocument()
+    expect(screen.queryByText('User')).toBeNull()
+  })
+})
+
+describe('PrivateChat error states', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    getUserChannels.mockResolvedValue({ channels: [], error: null })
+    sendPrivateMessage.mockResolvedValue({ data: { id: 'x' }, error: null })
+  })
+
+  function renderList() {
+    return render(
+      <MemoryRouter initialEntries={['/messages']}>
+        <Routes>
+          <Route path="/messages" element={<PrivateChat />} />
+        </Routes>
+      </MemoryRouter>
+    )
+  }
+
+  function renderThread() {
+    return render(
+      <MemoryRouter initialEntries={['/messages/ch-1']}>
+        <Routes>
+          <Route path="/messages/:channelId" element={<PrivateChat />} />
+        </Routes>
+      </MemoryRouter>
+    )
+  }
+
+  it('surfaces conversation-list load failures with a retry', async () => {
+    const user = userEvent.setup()
+    getUserChannels.mockResolvedValueOnce({ channels: null, error: { message: 'boom' } })
+    renderList()
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent(/couldn't load conversations/i)
+
+    getUserChannels.mockResolvedValueOnce({ channels: [], error: null })
+    await user.click(screen.getByText('Try again'))
+    await waitFor(() => {
+      expect(screen.getByText(/no conversations yet/i)).toBeInTheDocument()
+    })
+  })
+
+  it('shows an alert and keeps the typed text when a DM send fails', async () => {
+    const user = userEvent.setup()
+    sendPrivateMessage.mockResolvedValueOnce({ data: null, error: { message: 'rls denied' } })
+    renderThread()
+
+    const input = await screen.findByPlaceholderText(/type a message/i)
+    await user.type(input, 'do not lose this')
+    await user.click(screen.getByText('Send'))
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent(/couldn't send your message/i)
+    expect(input).toHaveValue('do not lose this')
   })
 })

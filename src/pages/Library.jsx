@@ -25,6 +25,7 @@ export default function Library() {
     finished: [],
   })
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(null)
 
   useEffect(() => {
     if (!user) return
@@ -33,20 +34,27 @@ export default function Library() {
 
   async function loadLibrary() {
     setLoading(true)
-    const results = {}
-    for (const s of SHELVES) {
-      const { data } = await getShelfBooks(user.id, s.id)
-      // Enrich with book details from Open Library
-      const enriched = await Promise.all(
-        (data || []).map(async (entry) => {
-          const book = await fetchWork(entry.book_key)
-          return { ...entry, ...book }
-        })
-      )
-      results[s.id] = enriched
+    setLoadError(null)
+    try {
+      const results = {}
+      for (const s of SHELVES) {
+        const { data, error } = await getShelfBooks(user.id, s.id)
+        if (error) throw new Error(error.message)
+        // Enrich with book details from Open Library
+        const enriched = await Promise.all(
+          (data || []).map(async (entry) => {
+            const book = await fetchWork(entry.book_key)
+            return { ...entry, ...book }
+          })
+        )
+        results[s.id] = enriched
+      }
+      setShelves(results)
+    } catch {
+      setLoadError("Couldn't load your shelves.")
+    } finally {
+      setLoading(false)
     }
-    setShelves(results)
-    setLoading(false)
   }
 
   async function handleRemove(bookKey) {
@@ -81,6 +89,13 @@ export default function Library() {
 
       {loading ? (
         <p className="library-loading">Loading your shelves...</p>
+      ) : loadError ? (
+        <div className="library-error" role="alert">
+          <p className="library-error-text">{loadError}</p>
+          <button className="retry-btn" onClick={loadLibrary} type="button">
+            Try again
+          </button>
+        </div>
       ) : totalBooks === 0 ? (
         <div className="library-empty">
           <span className="library-empty-icon" aria-hidden="true">📚</span>

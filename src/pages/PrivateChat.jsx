@@ -18,7 +18,9 @@ export default function PrivateChat() {
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
   const [loading, setLoading] = useState(true)
-  const [activeChannel, setActiveChannel] = useState(null)
+  const [channelsError, setChannelsError] = useState(null)
+  const [threadError, setThreadError] = useState(null)
+  const [sendError, setSendError] = useState(null)
   const messagesEndRef = useRef(null)
 
   useEffect(() => {
@@ -55,24 +57,45 @@ export default function PrivateChat() {
   }, [messages])
 
   async function loadChannels() {
-    const { channels: data } = await getUserChannels(user.id)
-    setChannels(data || [])
-    setLoading(false)
+    setLoading(true)
+    setChannelsError(null)
+    try {
+      const { channels: data, error } = await getUserChannels(user.id)
+      if (error) throw new Error(error.message || 'load failed')
+      setChannels(data || [])
+    } catch {
+      setChannelsError("Couldn't load conversations.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   async function loadMessages(cid) {
-    const { data } = await getChannelMessages(cid)
-    setMessages(data || [])
+    setThreadError(null)
+    try {
+      const { data, error } = await getChannelMessages(cid)
+      if (error) throw new Error(error.message || 'load failed')
+      setMessages(data || [])
+    } catch {
+      setThreadError("Couldn't load this conversation.")
+    }
   }
 
   async function handleSend(e) {
     e.preventDefault()
     if (!newMessage.trim() || !user || !channelId) return
 
-    const { data, error } = await sendPrivateMessage(channelId, user.id, newMessage.trim())
-    if (!error && data) {
+    setSendError(null)
+    try {
+      const { data, error } = await sendPrivateMessage(channelId, user.id, newMessage.trim())
+      if (error || !data) {
+        setSendError("Couldn't send your message. Please try again.")
+        return
+      }
       setMessages((prev) => [...prev, data])
       setNewMessage('')
+    } catch {
+      setSendError("Couldn't send your message. Please try again.")
     }
   }
 
@@ -105,6 +128,13 @@ export default function PrivateChat() {
         <div className="chat-channels">
           {loading ? (
             <p className="chat-loading">Loading conversations...</p>
+          ) : channelsError ? (
+            <div className="chat-error-state" role="alert">
+              <p>{channelsError}</p>
+              <button className="retry-btn" onClick={loadChannels} type="button">
+                Try again
+              </button>
+            </div>
           ) : channels.length === 0 ? (
             <div className="chat-empty">
               <span className="chat-empty-icon" aria-hidden="true">📩</span>
@@ -175,6 +205,14 @@ export default function PrivateChat() {
       </div>
 
       <div className="chat-messages">
+        {threadError && (
+          <div className="chat-error-state" role="alert">
+            <p>{threadError}</p>
+            <button className="retry-btn" onClick={() => loadMessages(channelId)} type="button">
+              Try again
+            </button>
+          </div>
+        )}
         {messages.map((msg) => (
           <div
             className={`chat-message ${msg.sender_id === user?.id ? 'chat-message--own' : ''}`}
@@ -204,6 +242,7 @@ export default function PrivateChat() {
           type="text"
           value={newMessage}
         />
+        {sendError && <p className="chat-error" role="alert">{sendError}</p>}
         <button
           className="chat-send-btn"
           disabled={!newMessage.trim()}

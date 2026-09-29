@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router'
+import { Link, useNavigate, useParams } from 'react-router'
 import { useAuth } from '../context/AuthContext'
 import Avatar from '../components/Avatar'
 import FollowButton from '../components/FollowButton'
+import { getOrCreateChannel } from '../lib/chat'
 import {
   fetchProfileByUsername,
   fetchFollowingCount,
@@ -36,8 +37,28 @@ export default function Profile() {
   const [following, setFollowing] = useState(false)
   const [notFound, setNotFound] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [dmBusy, setDmBusy] = useState(false)
+  const [dmError, setDmError] = useState(null)
+  const navigate = useNavigate()
 
   const isOwnProfile = user && profile && user.id === profile.id
+
+  // Opens (or reuses) the DM channel and jumps to the thread — the entry
+  // point private chat never had (design review 2026-09-29, finding 1B).
+  async function handleMessage() {
+    if (dmBusy || !user || !profile) return
+    setDmBusy(true)
+    setDmError(null)
+    try {
+      const { channelId, error } = await getOrCreateChannel(user.id, profile.id)
+      if (error || !channelId) throw new Error(error?.message || 'no channel')
+      navigate(`/messages/${channelId}`)
+    } catch {
+      setDmError("Couldn't open a conversation.")
+    } finally {
+      setDmBusy(false)
+    }
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -145,7 +166,24 @@ export default function Profile() {
                 Edit profile
               </Link>
             ) : (
-              <FollowButton following={following} profileId={profile.id} />
+              <>
+                <FollowButton following={following} profileId={profile.id} />
+                {user && (
+                  <button
+                    className="profile-message-btn"
+                    disabled={dmBusy}
+                    onClick={handleMessage}
+                    type="button"
+                  >
+                    {dmBusy ? 'Opening…' : 'Message'}
+                  </button>
+                )}
+              </>
+            )}
+            {dmError && (
+              <p className="comments-error" role="alert">
+                {dmError}
+              </p>
             )}
           </div>
         </div>

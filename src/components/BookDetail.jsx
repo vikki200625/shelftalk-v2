@@ -4,6 +4,7 @@ import { fetchWork } from '../lib/openlibrary'
 import BookCover from './BookCover'
 import CommentSection from './CommentSection'
 import StarRating from './StarRating'
+import ShelfSelector from './ShelfSelector'
 
 /**
  * BookDetail — the /book/:key page. The header renders instantly from
@@ -71,6 +72,7 @@ export default function BookDetail() {
               ))}
             </div>
           )}
+          <ShelfSelector bookKey={key} />
         </div>
       </div>
 

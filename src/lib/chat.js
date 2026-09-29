@@ -18,10 +18,11 @@ export async function sendGlobalMessage(userId, message) {
 }
 
 // Get recent global chat messages (newest first).
+// profiles embed requires migration 0013 (user_id FK → profiles).
 export async function getGlobalMessages(limit = 50) {
   const { data, error } = await supabase
     .from('global_chat_messages')
-    .select('id, user_id, message, created_at')
+    .select('id, user_id, message, created_at, profiles:user_id(username)')
     .order('created_at', { ascending: false })
     .limit(limit)
   return { data: data ? data.reverse() : [], error }

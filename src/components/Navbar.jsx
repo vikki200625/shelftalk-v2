@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import { useAuth } from '../context/AuthContext'
 import Avatar from './Avatar'
 import NotificationBell from './NotificationBell'
@@ -9,7 +9,7 @@ const LINKS = [
   { label: 'Library', to: '/library' },
   { label: 'Book Clubs', to: '/clubs' },
   { label: 'Find Friends', to: '/find-friends' },
-  { label: 'Chat', to: '/chat' },
+  { label: 'Community', to: '/chat' },
   { label: 'Messages', to: '/messages' },
 ]
 
@@ -18,6 +18,11 @@ export default function Navbar() {
   const [profileOpen, setProfileOpen] = useState(false)
   const { user, profile, signOut } = useAuth()
   const profileRef = useRef(null)
+  const { pathname } = useLocation()
+
+  // Current-section highlighting: exact match, or a child route
+  // (/messages/:channelId, /clubs/:id).
+  const isActive = (to) => pathname === to || pathname.startsWith(`${to}/`)
 
   // Close profile dropdown when clicking outside
   useEffect(() => {
@@ -57,15 +62,14 @@ export default function Navbar() {
         </Link>
         <div className="nav-links">
           {LINKS.map((link) => (
-            link.to ? (
-              <Link key={link.label} className="nav-link" to={link.to}>
-                {link.label}
-              </Link>
-            ) : (
-              <a key={link.label} className="nav-link" href={link.href}>
-                {link.label}
-              </a>
-            )
+            <Link
+              key={link.label}
+              className={`nav-link${isActive(link.to) ? ' nav-link--active' : ''}`}
+              to={link.to}
+              aria-current={isActive(link.to) ? 'page' : undefined}
+            >
+              {link.label}
+            </Link>
           ))}
         </div>
       </div>
@@ -129,25 +133,15 @@ export default function Navbar() {
       {menuOpen && (
         <div className="nav-menu-mobile">
           {LINKS.map((link) => (
-            link.to ? (
-              <Link
-                key={link.label}
-                className="nav-menu-mobile-link"
-                to={link.to}
-                onClick={() => setMenuOpen(false)}
-              >
-                {link.label}
-              </Link>
-            ) : (
-              <a
-                key={link.label}
-                className="nav-menu-mobile-link"
-                href={link.href}
-                onClick={() => setMenuOpen(false)}
-              >
-                {link.label}
-              </a>
-            )
+            <Link
+              key={link.label}
+              className={`nav-menu-mobile-link${isActive(link.to) ? ' nav-menu-mobile-link--active' : ''}`}
+              to={link.to}
+              aria-current={isActive(link.to) ? 'page' : undefined}
+              onClick={() => setMenuOpen(false)}
+            >
+              {link.label}
+            </Link>
           ))}
           {user ? (
             <>

@@ -41,9 +41,9 @@ vi.mock('../lib/supabase', () => {
 import { AuthProvider } from '../context/AuthContext'
 import Navbar from './Navbar'
 
-function renderNav() {
+function renderNav(initialEntry = '/') {
   return render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={[initialEntry]}>
       <AuthProvider>
         <Navbar />
       </AuthProvider>
@@ -67,8 +67,31 @@ describe('Navbar', () => {
     expect(screen.getByText('Browse')).toBeInTheDocument()
     expect(screen.getByText('Library')).toBeInTheDocument()
     expect(screen.getByText('Find Friends')).toBeInTheDocument()
-    expect(screen.getByText('Chat')).toBeInTheDocument()
+    expect(screen.getByText('Community')).toBeInTheDocument()
     expect(screen.getByText('Messages')).toBeInTheDocument()
+  })
+
+  it('marks the current section with aria-current and an active class', async () => {
+    renderNav('/chat')
+    await waitFor(() => {
+      expect(screen.getByText('Community')).toBeInTheDocument()
+    })
+    const community = screen.getByText('Community').closest('a')
+    expect(community).toHaveAttribute('aria-current', 'page')
+    expect(community.className).toContain('nav-link--active')
+
+    const browse = screen.getByText('Browse').closest('a')
+    expect(browse).not.toHaveAttribute('aria-current')
+    expect(browse.className).not.toContain('nav-link--active')
+  })
+
+  it('marks child routes as active (e.g. a thread under Messages)', async () => {
+    renderNav('/messages/some-channel-id')
+    await waitFor(() => {
+      expect(screen.getByText('Messages')).toBeInTheDocument()
+    })
+    const messages = screen.getByText('Messages').closest('a')
+    expect(messages).toHaveAttribute('aria-current', 'page')
   })
 
   it('renders Sign in and Get Started when not logged in', async () => {

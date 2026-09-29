@@ -4,11 +4,13 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
 import Library from '../pages/Library'
 
-// Mock auth context
+// Mock auth context — stable user ref so effects keyed on `user`
+// don't re-fire on every render (matches the real AuthContext).
+const { testUser } = vi.hoisted(() => ({
+  testUser: { id: 'user-1', email: 'test@example.com' },
+}))
 vi.mock('../context/AuthContext', () => ({
-  useAuth: () => ({
-    user: { id: 'user-1', email: 'test@example.com' },
-  }),
+  useAuth: () => ({ user: testUser }),
 }))
 
 // Mock library API
@@ -78,6 +80,28 @@ describe('Library page', () => {
     )
     await waitFor(() => {
       expect(screen.getByText('Set goal')).toBeInTheDocument()
+    })
+  })
+
+  it('surfaces a load failure with retry instead of a fake empty shelf', async () => {
+    const { getShelfBooks } = await import('../lib/library')
+    const user = userEvent.setup()
+    getShelfBooks.mockResolvedValueOnce({ data: null, error: { message: 'boom' } })
+
+    render(
+      <MemoryRouter>
+        <Library />
+      </MemoryRouter>
+    )
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent(/couldn't load your shelves/i)
+    expect(screen.queryByText(/shelves are empty/i)).toBeNull()
+
+    getShelfBooks.mockResolvedValue({ data: [], error: null })
+    await user.click(screen.getByText('Try again'))
+    await waitFor(() => {
+      expect(screen.getByText(/shelves are empty/i)).toBeInTheDocument()
     })
   })
 })

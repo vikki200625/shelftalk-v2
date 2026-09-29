@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { sendGlobalMessage, getGlobalMessages, subscribeGlobalMessages } from '../lib/chat'
+import supabase from '../lib/supabase'
 import Avatar from '../components/Avatar'
 
 export default function GlobalChat() {
@@ -9,12 +10,29 @@ export default function GlobalChat() {
   const [newMessage, setNewMessage] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [loadError, setLoadError] = useState(null)
   const messagesEndRef = useRef(null)
   const [userNames, setUserNames] = useState({})
+
+  // Realtime payloads carry no profile embed — resolve the sender's
+  // username once and cache it so the label doesn't stay a fallback.
+  async function resolveUsername(userId) {
+    const { data } = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('id', userId)
+      .maybeSingle()
+    if (data?.username) {
+      setUserNames((prev) => ({ ...prev, [userId]: data.username }))
+    }
+  }
 
   useEffect(() => {
     loadMessages()
     const subscription = subscribeGlobalMessages((message) => {
+      if (message.user_id !== user?.id && !message.profiles) {
+        resolveUsername(message.user_id)
+      }
       setMessages((prev) => [...prev, message])
     })
 
@@ -28,9 +46,22 @@ export default function GlobalChat() {
   }, [messages])
 
   async function loadMessages() {
-    const { data } = await getGlobalMessages(100)
-    setMessages(data || [])
-    setLoading(false)
+    setLoading(true)
+    setLoadError(null)
+    try {
+      const { data, error: loadErr } = await getGlobalMessages(100)
+      if (loadErr) throw new Error(loadErr.message)
+      setMessages(data || [])
+    } catch {
+      setLoadError("Couldn't load messages.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  function displayName(msg) {
+    if (msg.user_id === user?.id) return 'You'
+    return msg.profiles?.username || userNames[msg.user_id] || 'Reader'
   }
 
   async function handleSend(e) {
@@ -85,6 +116,13 @@ export default function GlobalChat() {
       <div className="chat-messages">
         {loading ? (
           <p className="chat-loading">Loading messages...</p>
+        ) : loadError ? (
+          <div className="chat-error-state" role="alert">
+            <p>{loadError}</p>
+            <button className="retry-btn" onClick={loadMessages} type="button">
+              Try again
+            </button>
+          </div>
         ) : messages.length === 0 ? (
           <div className="chat-empty">
             <span className="chat-empty-icon" aria-hidden="true">💬</span>
@@ -98,12 +136,12 @@ export default function GlobalChat() {
             >
               <Avatar
                 size={32}
-                username={msg.user_id === user?.id ? (user.email?.split('@')[0] || 'user') : 'other'}
+                username={displayName(msg) === 'You' ? (user?.email?.split('@')[0] || 'you') : displayName(msg)}
               />
               <div className="chat-message-content">
                 <div className="chat-message-header">
                   <span className="chat-message-user">
-                    {msg.user_id === user?.id ? 'You' : 'User'}
+                    {displayName(msg)}
                   </span>
                   <span className="chat-message-time">{formatTime(msg.created_at)}</span>
                 </div>
