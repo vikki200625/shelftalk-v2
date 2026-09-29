@@ -32,6 +32,10 @@ GRANT EXECUTE ON FUNCTION public.is_channel_member(uuid) TO authenticated;
 
 -- Sweep every existing SELECT policy on chat_participants (live
 -- names have drifted from migration files before — see 0009/0013).
+-- Belt and braces: drop the known name explicitly first, then sweep
+-- by pg_policy command code ('r' = SELECT) for anything else.
+DROP POLICY IF EXISTS participants_select ON public.chat_participants;
+
 DO $$
 DECLARE
   p record;
@@ -40,7 +44,7 @@ BEGIN
     SELECT polname
     FROM pg_policy
     WHERE polrelid = 'public.chat_participants'::regclass
-      AND polcmd = 's'          -- SELECT
+      AND polcmd = 'r'          -- SELECT (pg_acl command code)
   LOOP
     EXECUTE format('DROP POLICY %I ON public.chat_participants', p.polname);
   END LOOP;
