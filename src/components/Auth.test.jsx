@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Route, Routes } from 'react-router'
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router'
 import { AuthProvider, useAuth } from '../context/AuthContext'
 import ProtectedRoute from './ProtectedRoute'
 import SignIn from '../pages/SignIn'
@@ -96,6 +96,32 @@ describe('ProtectedRoute', () => {
       expect(screen.getByText('sign-in-page')).toBeInTheDocument()
     })
     expect(screen.queryByText('secret')).not.toBeInTheDocument()
+  })
+
+  it('carries the blocked path as return-URL state on the redirect', async () => {
+    function SignInStub() {
+      const location = useLocation()
+      return <div>from:{String(location.state?.from)}</div>
+    }
+
+    wrapper(
+      <Routes>
+        <Route
+          path="/protected"
+          element={
+            <ProtectedRoute>
+              <div>secret</div>
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/signin" element={<SignInStub />} />
+      </Routes>,
+      { route: '/protected' }
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('from:/protected')).toBeInTheDocument()
+    })
   })
 
   it('shows loading state before auth resolves', () => {

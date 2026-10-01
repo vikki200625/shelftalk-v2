@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router'
 import { AuthProvider } from './context/AuthContext'
 import Navbar from './components/Navbar'
+import ProtectedRoute from './components/ProtectedRoute'
 import Footer from './components/Footer'
 import Landing from './components/Landing'
 import BookDetail from './components/BookDetail'
@@ -30,23 +31,28 @@ export default function App() {
       <Navbar />
       <main className="page-main" id="main-content">
         <Routes>
+          {/* Public: landing + auth pages only */}
           <Route path="/" element={<Landing />} />
-          <Route path="/browse" element={<Browse />} />
-          <Route path="/clubs" element={<Clubs />} />
-          <Route path="/clubs/new" element={<CreateClub />} />
-          <Route path="/clubs/:id" element={<ClubDetail />} />
-          <Route path="/book/:key" element={<BookDetail />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/profile/:username" element={<Profile />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/find-friends" element={<FindFriends />} />
-          <Route path="/library" element={<Library />} />
-          <Route path="/chat" element={<GlobalChat />} />
-          <Route path="/messages" element={<PrivateChat />} />
-          <Route path="/messages/:channelId" element={<PrivateChat />} />
+
+          {/* Everything else requires a logged-in user */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/browse" element={<Browse />} />
+            <Route path="/clubs" element={<Clubs />} />
+            <Route path="/clubs/new" element={<CreateClub />} />
+            <Route path="/clubs/:id" element={<ClubDetail />} />
+            <Route path="/book/:key" element={<BookDetail />} />
+            <Route path="/profile/:username" element={<Profile />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/find-friends" element={<FindFriends />} />
+            <Route path="/library" element={<Library />} />
+            <Route path="/chat" element={<GlobalChat />} />
+            <Route path="/messages" element={<PrivateChat />} />
+            <Route path="/messages/:channelId" element={<PrivateChat />} />
+          </Route>
         </Routes>
       </main>
       <Footer />

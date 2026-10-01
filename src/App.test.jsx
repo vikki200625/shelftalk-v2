@@ -1,8 +1,71 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, within, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import userEvent from '@testing-library/user-event'
 import App from './App'
+
+// Auth is mocked so tests can choose signed-in vs signed-out without
+// touching the real Supabase session.
+const authState = vi.hoisted(() => ({ user: null }))
+
+// Real supabase would open websockets (notification bell) in signed-in
+// tests — mock the whole client with a benign thenable query chain.
+vi.mock('./lib/supabase', () => {
+  const makeChain = () => {
+    const c = {}
+    const methods = [
+      'select', 'insert', 'update', 'delete', 'upsert', 'eq', 'neq', 'not',
+      'is', 'in', 'ilike', 'like', 'gt', 'gte', 'lt', 'lte', 'or', 'match',
+      'contains', 'order', 'limit', 'range', 'single', 'maybeSingle', 'on',
+    ]
+    methods.forEach((m) => {
+      c[m] = () => c
+    })
+    c.subscribe = () => ({ unsubscribe: () => {} })
+    c.then = (resolve, reject) =>
+      Promise.resolve({ data: [], error: null, count: null }).then(resolve, reject)
+    return c
+  }
+  const chain = makeChain()
+
+  return {
+    default: {
+      auth: {
+        getSession: () => Promise.resolve({ data: { session: null } }),
+        onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+        signOut: async () => ({ error: null }),
+        signUp: async () => ({ data: {}, error: null }),
+        signInWithPassword: async () => ({ data: {}, error: null }),
+        resetPasswordForEmail: async () => ({ error: null }),
+        updateUser: async () => ({ error: null }),
+      },
+      from: () => chain,
+      channel: () => chain,
+      removeChannel: () => {},
+    },
+  }
+})
+
+vi.mock('./context/AuthContext', () => ({
+  AuthProvider: ({ children }) => children,
+  useAuth: () => ({
+    user: authState.user,
+    profile: authState.user ? { username: 'tester' } : null,
+    loading: false,
+    // Success flips the shared state so ProtectedRoute lets the
+    // post-sign-in redirect through (mirrors a real session).
+    signIn: async () => {
+      authState.user = { id: 'u1', email: 'tester@test.com' }
+      return { data: true }
+    },
+    signUp: async () => ({ data: {} }),
+    signOut: async () => {
+      authState.user = null
+    },
+    forgotPassword: async () => ({ data: true }),
+    resetPassword: async () => ({}),
+  }),
+}))
 
 // App uses react-router (BrowserRouter in main.jsx) — tests render it
 // inside a MemoryRouter so navigation works without a real URL bar.
@@ -15,12 +78,25 @@ function renderApp(initialEntries = ['/']) {
 }
 
 describe('landing page', () => {
-  it('renders the navbar with brand and CTA', () => {
+  beforeEach(() => {
+    authState.user = null
+  })
+
+  it('renders the navbar with brand and auth CTAs (no gated links)', () => {
     renderApp()
     const nav = screen.getByRole('navigation')
     expect(within(nav).getByText('ShellTalk')).toBeInTheDocument()
     expect(within(nav).getByText('Get Started')).toBeInTheDocument()
-    expect(within(nav).getByText('Browse')).toBeInTheDocument()
+    expect(within(nav).getByText('Sign in')).toBeInTheDocument()
+    expect(within(nav).queryByText('Browse')).not.toBeInTheDocument()
+  })
+
+  it('shows the feature nav links once signed in', async () => {
+    authState.user = { id: 'u1', email: 'u1@test.com' }
+    renderApp()
+    const nav = screen.getByRole('navigation')
+    expect(await within(nav).findByText('Browse')).toBeInTheDocument()
+    expect(within(nav).getByText('Library')).toBeInTheDocument()
   })
 
   it('renders the hero headline and subtitle', () => {
@@ -98,6 +174,7 @@ describe('landing page', () => {
   })
 
   it('renders the book detail page at /book/:key', async () => {
+    authState.user = { id: 'u1', email: 'u1@test.com' }
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({
@@ -112,11 +189,30 @@ describe('landing page', () => {
   })
 
   it('shows the book header instantly from router state', async () => {
+    authState.user = { id: 'u1', email: 'u1@test.com' }
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ title: 'Dune', subjects: [], covers: [] }) }))
 
     renderApp([{ pathname: '/book/OL1W', state: { book: { key: '/works/OL1W', title: 'Dune', authorName: 'Frank Herbert' } } }])
     expect(screen.getByRole('heading', { name: 'Dune' })).toBeInTheDocument()
     expect(screen.getByText('Frank Herbert')).toBeInTheDocument()
+  })
+
+  it('redirects a signed-out visitor from a gated page to sign-in', async () => {
+    renderApp(['/library'])
+
+    expect(await screen.findByText('Welcome back')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /my library/i })).not.toBeInTheDocument()
+  })
+
+  it('sends a signed-in visitor back to the page that bounced them', async () => {
+    const user = userEvent.setup()
+    renderApp([{ pathname: '/signin', state: { from: '/library' } }])
+
+    await user.type(screen.getByLabelText(/username/i), 'tester')
+    await user.type(screen.getByLabelText(/password/i), 'Password1!')
+    await user.click(screen.getByRole('button', { name: /^sign in$/i }))
+
+    expect(await screen.findByRole('heading', { name: 'My Library' })).toBeInTheDocument()
   })
 
   it('closes the search dropdown when clicking outside', async () => {

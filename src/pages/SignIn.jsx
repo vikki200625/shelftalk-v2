@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { Link, useLocation, useNavigate } from 'react-router'
 import { useAuth } from '../context/AuthContext'
 
 export default function SignIn() {
   const { signIn } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -23,7 +24,8 @@ export default function SignIn() {
       return
     }
 
-    navigate('/')
+    // Back to the page that bounced us here, or home if we came directly.
+    navigate(location.state?.from || '/', { replace: true })
   }
 
   return (

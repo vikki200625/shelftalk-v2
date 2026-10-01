@@ -60,18 +60,21 @@ export default function Navbar() {
           </svg>
           <span className="nav-logo-text">ShellTalk</span>
         </Link>
-        <div className="nav-links">
-          {LINKS.map((link) => (
-            <Link
-              key={link.label}
-              className={`nav-link${isActive(link.to) ? ' nav-link--active' : ''}`}
-              to={link.to}
-              aria-current={isActive(link.to) ? 'page' : undefined}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </div>
+        {/* Feature links are entry points to gated pages — hide until signed in */}
+        {user && (
+          <div className="nav-links">
+            {LINKS.map((link) => (
+              <Link
+                key={link.label}
+                className={`nav-link${isActive(link.to) ? ' nav-link--active' : ''}`}
+                to={link.to}
+                aria-current={isActive(link.to) ? 'page' : undefined}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
       {user && <NotificationBell />}
       <div className="nav-right">
@@ -132,17 +135,18 @@ export default function Navbar() {
       {/* Mobile dropdown menu */}
       {menuOpen && (
         <div className="nav-menu-mobile">
-          {LINKS.map((link) => (
-            <Link
-              key={link.label}
-              className={`nav-menu-mobile-link${isActive(link.to) ? ' nav-menu-mobile-link--active' : ''}`}
-              to={link.to}
-              aria-current={isActive(link.to) ? 'page' : undefined}
-              onClick={() => setMenuOpen(false)}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {user &&
+            LINKS.map((link) => (
+              <Link
+                key={link.label}
+                className={`nav-menu-mobile-link${isActive(link.to) ? ' nav-menu-mobile-link--active' : ''}`}
+                to={link.to}
+                aria-current={isActive(link.to) ? 'page' : undefined}
+                onClick={() => setMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
           {user ? (
             <>
               <NotificationBell />

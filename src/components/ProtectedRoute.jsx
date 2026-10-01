@@ -1,8 +1,9 @@
-import { Navigate } from 'react-router'
+import { Navigate, Outlet, useLocation } from 'react-router'
 import { useAuth } from '../context/AuthContext'
 
 export default function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
+  const location = useLocation()
 
   if (loading) {
     return (
@@ -13,8 +14,9 @@ export default function ProtectedRoute({ children }) {
   }
 
   if (!user) {
-    return <Navigate replace to="/signin" />
+    // Remember where the visitor wanted to go so SignIn can send them back.
+    return <Navigate replace to="/signin" state={{ from: location.pathname + location.search }} />
   }
 
-  return children
+  return children ?? <Outlet />
 }

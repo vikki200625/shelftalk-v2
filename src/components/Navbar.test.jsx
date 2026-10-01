@@ -3,6 +3,8 @@ import { MemoryRouter } from 'react-router'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // Mock supabase before any imports that use it
+const authSession = vi.hoisted(() => ({ current: null }))
+
 vi.mock('../lib/supabase', () => {
   const chain = () => chain
   chain.select = () => chain
@@ -28,18 +30,24 @@ vi.mock('../lib/supabase', () => {
   return {
     default: {
       auth: {
-        getSession: () => Promise.resolve({ data: { session: null } }),
+        getSession: () => Promise.resolve({ data: { session: authSession.current } }),
         onAuthStateChange: () => ({ data: { subscription: { unsubscribe: vi.fn() } } }),
         signOut: vi.fn(),
       },
       from: () => chain,
       channel: () => chain,
+      removeChannel: vi.fn(),
     },
   }
 })
 
 import { AuthProvider } from '../context/AuthContext'
 import Navbar from './Navbar'
+
+// Signed-in session the AuthProvider will pick up on mount.
+function signInTestUser() {
+  authSession.current = { user: { id: 'u1', email: 'u1@test.com' } }
+}
 
 function renderNav(initialEntry = '/') {
   return render(
@@ -52,6 +60,10 @@ function renderNav(initialEntry = '/') {
 }
 
 describe('Navbar', () => {
+  beforeEach(() => {
+    authSession.current = null
+  })
+
   it('renders the brand name', async () => {
     renderNav()
     await waitFor(() => {
@@ -59,19 +71,36 @@ describe('Navbar', () => {
     })
   })
 
-  it('renders navigation links', async () => {
+  it('renders navigation links when signed in', async () => {
+    signInTestUser()
     renderNav()
     await waitFor(() => {
-      expect(screen.getByText('ShellTalk')).toBeInTheDocument()
+      expect(screen.getByText('Browse')).toBeInTheDocument()
     })
-    expect(screen.getByText('Browse')).toBeInTheDocument()
     expect(screen.getByText('Library')).toBeInTheDocument()
     expect(screen.getByText('Find Friends')).toBeInTheDocument()
     expect(screen.getByText('Community')).toBeInTheDocument()
     expect(screen.getByText('Messages')).toBeInTheDocument()
   })
 
+  it('hides feature links when not logged in', async () => {
+    renderNav()
+    await waitFor(() => {
+      expect(screen.getByText('ShellTalk')).toBeInTheDocument()
+    })
+    // Gated-page entry points must not be offered to logged-out visitors…
+    expect(screen.queryByText('Browse')).not.toBeInTheDocument()
+    expect(screen.queryByText('Library')).not.toBeInTheDocument()
+    expect(screen.queryByText('Find Friends')).not.toBeInTheDocument()
+    expect(screen.queryByText('Community')).not.toBeInTheDocument()
+    expect(screen.queryByText('Messages')).not.toBeInTheDocument()
+    // …only the auth CTAs.
+    expect(screen.getByText('Sign in')).toBeInTheDocument()
+    expect(screen.getByText('Get Started')).toBeInTheDocument()
+  })
+
   it('marks the current section with aria-current and an active class', async () => {
+    signInTestUser()
     renderNav('/chat')
     await waitFor(() => {
       expect(screen.getByText('Community')).toBeInTheDocument()
@@ -86,6 +115,7 @@ describe('Navbar', () => {
   })
 
   it('marks child routes as active (e.g. a thread under Messages)', async () => {
+    signInTestUser()
     renderNav('/messages/some-channel-id')
     await waitFor(() => {
       expect(screen.getByText('Messages')).toBeInTheDocument()
@@ -104,6 +134,7 @@ describe('Navbar', () => {
   })
 
   it('toggles mobile menu on burger click', async () => {
+    signInTestUser()
     renderNav()
     await waitFor(() => {
       expect(screen.getByText('ShellTalk')).toBeInTheDocument()
@@ -115,6 +146,18 @@ describe('Navbar', () => {
     // Mobile menu should appear with links — both desktop and mobile links exist
     const browseLinks = screen.getAllByText('Browse')
     expect(browseLinks.length).toBeGreaterThan(1)
+  })
+
+  it('mobile menu hides feature links when not logged in', async () => {
+    renderNav()
+    await waitFor(() => {
+      expect(screen.getByText('ShellTalk')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByLabelText('Toggle menu'))
+    expect(screen.queryByText('Browse')).not.toBeInTheDocument()
+    // Desktop + mobile both offer sign-in.
+    expect(screen.getAllByText('Sign in').length).toBeGreaterThan(1)
   })
 
   it('burger toggles aria-expanded', async () => {
